@@ -20,7 +20,7 @@
 
 #define OPENGL_DEBUG_FOR_GLFW true
 
-std::filesystem::path UserSelectImageFile();
+//std::filesystem::path UserSelectImageFile();
 
 void HelpMarker(const char* desc);
 

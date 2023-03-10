@@ -892,15 +892,15 @@ void ImGUIDisplay() {
                 sphere->updateStep(steps);
             }
 
-            if (ImGui::Button("Select new earth texture image file")) {
-                glDeleteTextures(1,&earthTexID);
-                earthTexID = loadTexture(UserSelectImageFile().string().c_str());
-            }
-
-            if (ImGui::Button("Select new random texture image file")) {
-                glDeleteTextures(1,&randomMadeTexID);
-                randomMadeTexID = loadTexture(UserSelectImageFile().string().c_str());
-            }
+//            if (ImGui::Button("Select new earth texture image file")) {
+//                glDeleteTextures(1,&earthTexID);
+//                earthTexID = loadTexture(UserSelectImageFile().string().c_str());
+//            }
+//
+//            if (ImGui::Button("Select new random texture image file")) {
+//                glDeleteTextures(1,&randomMadeTexID);
+//                randomMadeTexID = loadTexture(UserSelectImageFile().string().c_str());
+//            }
 
             if (ImGui::Button("Reload Shaders")) {
                 SPDLOG_INFO("Reload Shaders");

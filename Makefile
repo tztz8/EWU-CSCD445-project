@@ -65,10 +65,10 @@ EFLAGS += -I $(SPDLOG_INCLUDE_DIR)
 STB_INCLUDE_DIR = exernalLibraries/stb
 EFLAGS += -I $(STB_INCLUDE_DIR)
 
-# psd
-# exernalLibraries/portable-file-dialogs
-PFD_INCLUDE_DIR = exernalLibraries/portable-file-dialogs
-EFLAGS += -I $(PFD_INCLUDE_DIR)
+## psd
+## exernalLibraries/portable-file-dialogs
+#PFD_INCLUDE_DIR = exernalLibraries/portable-file-dialogs
+#EFLAGS += -I $(PFD_INCLUDE_DIR)
 
 # GLFW lib
 $(BUILD_DIR)/glfw/src/libglfw3.a:

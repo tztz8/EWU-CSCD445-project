@@ -19,21 +19,21 @@
 
 #include "main.h"
 
-#include <portable-file-dialogs.h>
+//#include <portable-file-dialogs.h>
 
 #include "imgui.h"
 
-std::filesystem::path UserSelectImageFile() {
-    pfd::open_file fileBox("Select a Image File", ".",
-                           {"Image FileS", "*.png *.jpg *.jpeg *.bmp *.tga *.psd *.gif *.hdr *.pic"});
-    std::vector<std::string> selection = fileBox.result();
-    SPDLOG_INFO(spdlog::fmt_lib::format("Number of selected files {}", selection.size()));
-    if (selection.size() == 0) {
-        return std::filesystem::path("res/textures/Earth.jpg");
-    }
-    SPDLOG_INFO(spdlog::fmt_lib::format("User Select Image File \"{}\"", selection[0]));
-    return std::filesystem::path(selection[0]);
-}
+//std::filesystem::path UserSelectImageFile() {
+//    pfd::open_file fileBox("Select a Image File", ".",
+//                           {"Image FileS", "*.png *.jpg *.jpeg *.bmp *.tga *.psd *.gif *.hdr *.pic"});
+//    std::vector<std::string> selection = fileBox.result();
+//    SPDLOG_INFO(spdlog::fmt_lib::format("Number of selected files {}", selection.size()));
+//    if (selection.size() == 0) {
+//        return std::filesystem::path("res/textures/Earth.jpg");
+//    }
+//    SPDLOG_INFO(spdlog::fmt_lib::format("User Select Image File \"{}\"", selection[0]));
+//    return std::filesystem::path(selection[0]);
+//}
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
 // In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
@@ -545,11 +545,11 @@ void updateVertexNormals(const glm::vec3* vertices, glm::vec3* norms, const GLus
     glm::vec3 p3;
     glm::vec3 n;
 
-    for (int i = 0; i < numNormals; i++) {
+    for (GLuint i = 0; i < numNormals; i++) {
         norms[i] = glm::vec3(0.0, 0.0, 0.0);
     }
 
-    for (int index = 0; index < numIndices; index+=3) {
+    for (GLuint index = 0; index < numIndices; index+=3) {
 
         p1 = vertices[indices[index + 0]];
         p2 = vertices[indices[index + 1]];
@@ -562,7 +562,7 @@ void updateVertexNormals(const glm::vec3* vertices, glm::vec3* norms, const GLus
         norms[indices[index + 2]] += n;
     }
 
-    for (int i = 0; i < numNormals; i++) {
+    for (GLuint i = 0; i < numNormals; i++) {
         norms[i] = glm::normalize(norms[i]);
     }
 }
@@ -584,11 +584,11 @@ void updateVertexNormals(const glm::vec3* vertices, glm::vec3* norms, const GLui
     glm::vec3 p3;
     glm::vec3 n;
 
-    for (int i = 0; i < numNormals; i++) {
+    for (GLuint i = 0; i < numNormals; i++) {
         norms[i] = glm::vec3(0.0, 0.0, 0.0);
     }
 
-    for (int index = 0; index < numIndices; index+=3) {
+    for (GLuint index = 0; index < numIndices; index+=3) {
 
         p1 = vertices[indices[index + 0]];
         p2 = vertices[indices[index + 1]];
@@ -601,7 +601,7 @@ void updateVertexNormals(const glm::vec3* vertices, glm::vec3* norms, const GLui
         norms[indices[index + 2]] += n;
     }
 
-    for (int i = 0; i < numNormals; i++) {
+    for (GLuint i = 0; i < numNormals; i++) {
         norms[i] = glm::normalize(norms[i]);
     }
 }
@@ -626,7 +626,7 @@ void unitizeModel(glm::vec3 vertices[], GLuint numVertices) {
     min_z = max_z = vertices[0].z;
 
     // finding the min and max for xyz
-    for (int i = 0; i < numVertices; ++i) {
+    for (GLuint i = 0; i < numVertices; ++i) {
         glm::vec3 vertex = vertices[i];
         if (vertex.x < min_x) {
             min_x = vertex.x;
@@ -660,7 +660,7 @@ void unitizeModel(glm::vec3 vertices[], GLuint numVertices) {
     // Step 4: Calculate the scale factor!.
     float scale = glm::max(depth, glm::max(width, height));
 
-    for (int i = 0; i < numVertices; i++) {
+    for (GLuint i = 0; i < numVertices; i++) {
         // Step 5: Center the model at the origin!
         // moving points to center of the screen
         vertices[i].x -= center_x;
