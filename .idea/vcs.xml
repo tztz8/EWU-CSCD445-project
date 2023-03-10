@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/exernalLibraries/glew" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/exernalLibraries/glfw" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/exernalLibraries/glm" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/exernalLibraries/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/exernalLibraries/portable-file-dialogs" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/exernalLibraries/spdlog" vcs="Git" />
+  </component>
+</project>
