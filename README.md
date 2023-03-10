@@ -44,6 +44,18 @@ BLANK
 
 TODO Video Link
 
+## Making
+
+We only test on linux
+
+Need OpenGL lib and dev
+
+Need GLEW lib and dev
+
+Need GLU lib and dev
+
+Need GLM dev
+
 ## Notes
 
 - https://github.com/tztz8/OpenGL-All

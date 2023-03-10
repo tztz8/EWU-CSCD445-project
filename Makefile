@@ -40,9 +40,9 @@ SOURCE	= $(shell find $(SRC_DIR) -name '*.cpp' -or -name '*.c')
 CUDA_SOURCE	= $(shell find $(SRC_DIR) -name '*.cu')
 HEADS	= $(shell find $(INCLUDE_DIR) -name '*.hpp' -or -name '*.h' -or -name '*.cuh')
 
-# #################################
-# #    Make GLM, SPDLOG, IMGUI    #
-# #################################
+# ######################################
+# #    Make SPDLOG, IMGUI, and more    #
+# ######################################
 
 # IMGUI
 SOURCE	+= $(shell ls exernalLibraries/imgui/*.cpp)
