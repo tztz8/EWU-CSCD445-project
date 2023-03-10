@@ -37,4 +37,19 @@ void main() {
     vec4 texColor = texture( Tex1, TexCoord );
     fColor = min(texColor * (ambient + diffuse) + specular, vec4(1.0));
     fColor.a = 1.0;
+
+
+//    vec3 s = normalize(vec3(LightPosition) - vec3(Position));
+//    float intensity = max(dot(s, Normal), 0.0);
+//
+//    if (intensity > 0.95)
+//        fColor = vec4(vec3(texColor * 0.95), 1.0);
+//    else if (intensity > 0.75)
+//        fColor = vec4(vec3(texColor * 0.75), 1.0);
+//    else if (intensity > 0.5)
+//        fColor = vec4(vec3(texColor * 0.50), 1.0);
+//    else if (intensity > 0.25)
+//        fColor = vec4(vec3(texColor * 0.25), 1.0);
+//    else
+//        fColor = vec4(vec3(texColor * 0.10), 1.0);
 }

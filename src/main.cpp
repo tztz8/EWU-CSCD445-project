@@ -1,14 +1,3 @@
-/**
- * @file main.cpp
- * @author Timbre Freeman (tztz8)
- * @brief Start of the program
- * @version 0.1
- * @date 2022-06-20
- * 
- * @copyright Copyright (c) 2022
- * 
- */
-
 //          --- Libraries ---
 
 // Normal Lib
@@ -47,7 +36,6 @@
 
 // OpenGL Helper Methods
 #include "OpenGLHelperMethods.h"
-#include "ModelLoader.h"
 #include "main.h"
 
 // Cuda Methods
@@ -69,7 +57,7 @@ bool exitWindowFlag = false;
 bool isFullScreen = false; // do not change // look at main to make it full screen
 
 // initial screen size
-int screenWidth = 512, screenHeight = 512;
+int screenWidth = 1080, screenHeight = 512;
 
 // Current screen size
 GLint glScreenWidth, glScreenHeight;
@@ -78,7 +66,7 @@ GLint glScreenWidth, glScreenHeight;
 bool freeGLUTSizeUpdate;
 
 // title info
-std::string original_title("GLFW - OpenGL-All");
+std::string original_title("EWU-CSCD445-CUDA-GLFW-Project");
 
 /**
  * description on what the keyboard key used for <br>
@@ -101,16 +89,14 @@ void Initialize();
 
 enum class Models {
     sphere,
-    cube,
-    wireframeOBJ
+    cube
 };
 //const Models allModels[] = {Models::sphere, Models::cube};
-std::array<Models, 3> allModels = {Models::sphere, Models::cube, Models::wireframeOBJ};
-std::array<std::string, 3> allModelsNames = {"Sphere", "Cube", "Wireframe OBJ"};
-Models select_model = Models::sphere;
+std::array<Models, 2> allModels = {Models::sphere, Models::cube};
+std::array<std::string, 2> allModelsNames = {"Sphere", "Cube"};
+Models select_model = Models::cube;
 Sphere* sphere;
 Cube* cube;
-SimpleModel* wireframeOBJModel;
 
 /**
  * Main - Start of the program
@@ -173,7 +159,7 @@ int main(int argc, char* argv[]) {
     }
 
     // icon
-    loadGLFWIcon(window, "res/icon/Timbre-Logo_O.png");
+    loadGLFWIcon(window, "res/icon/eagle.png");
 
     // Initialize GLEW
     SPDLOG_INFO("Initialize GLEW");
@@ -214,10 +200,10 @@ int main(int argc, char* argv[]) {
     Initialize();
 
     // GL info
-    SPDLOG_INFO(spdlog::fmt_lib::format("GL Vendor : {}", glGetString(GL_VENDOR)));
-    SPDLOG_INFO(spdlog::fmt_lib::format("GL Renderer : {}", glGetString(GL_RENDERER)));
-    SPDLOG_INFO(spdlog::fmt_lib::format("GL Version (shading language) : {}", glGetString(GL_SHADING_LANGUAGE_VERSION)));
-    SPDLOG_INFO(spdlog::fmt_lib::format("GL Version : {}", glGetString(GL_VERSION)));
+    SPDLOG_INFO(spdlog::fmt_lib::format("GL Vendor : {}", (const char*) glGetString(GL_VENDOR)));
+    SPDLOG_INFO(spdlog::fmt_lib::format("GL Renderer : {}", (const char*) glGetString(GL_RENDERER)));
+    SPDLOG_INFO(spdlog::fmt_lib::format("GL Version (shading language) : {}", (const char*) glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    SPDLOG_INFO(spdlog::fmt_lib::format("GL Version : {}", (const char*) glGetString(GL_VERSION)));
 
     // Ensure we can capture the escape key being pressed below and any other keys
     SPDLOG_INFO("Setup user input mode");
@@ -524,7 +510,6 @@ glm::vec3 model_rotate_vector(1.0F, 0.0F, 0.0F);
 GLuint earthTexID;
 GLuint randomMadeTexID;
 GLuint cubeTexID;
-GLuint modelTexID;
 
 //          --- Methods ---
 
@@ -586,15 +571,6 @@ void Initialize(){
     earthTexID = loadTexture("res/textures/Earth.jpg");
     randomMadeTexID = loadTexture("res/textures/randomMade.png");
     cubeTexID = loadTexture("res/textures/wests_textures/stone wall 9.png");
-    modelTexID = loadTexture("res/textures/failsafe.png");
-
-    // load model
-    wireframeOBJModel = readOBJ("res/models/box.obj");
-    if (wireframeOBJModel == nullptr) {
-        // TODO: add
-    } else {
-        // TODO: add
-    }
 
     // TODO: see why this is here
     // glEnable(GL_PROGRAM_POINT_SIZE);
@@ -1024,9 +1000,6 @@ void Display() {
         case Models::cube:
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, cubeTexID);
-            break;
-        case Models::wireframeOBJ:
-            // TODO: add 
             break;
     }
     model_matrix = glm::scale(model_matrix, model_Scale);

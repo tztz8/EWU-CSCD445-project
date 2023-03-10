@@ -1,7 +1,7 @@
 BUILD_DIR := ./build
 SRC_DIR := ./src
 INCLUDE_DIR := ./include
-OUT	= OpenGL-All
+OUT	= project
 CC	 = clang
 NVCC	 = nvcc
 FLAGS	 = -Wall -g -c -x c++ -Ofast

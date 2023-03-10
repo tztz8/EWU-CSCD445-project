@@ -69,7 +69,7 @@ void Sphere::create() {
             }
         }
 
-    // TODO: Debug
+    // Debug
     SPDLOG_DEBUG(spdlog::fmt_lib::format("NumVertices: {}, i: {}", this->numVertices, i));
 
     size_t size_t_numVertices = static_cast<size_t>(this->numVertices);
@@ -95,14 +95,14 @@ void Sphere::create() {
     updateVertexTangents(points.data(), normals.data(), tangents.data(),
                          this->numVertices, this->numIndices,
                         indices.data(), TexCoord.data());
-    // TODO: Debug
+    // Debug
 //    fprintf(stdout, "Debug: Sphere Class: NumVertices: %d, tangents size: %zu\n", this->numVertices, tangents.size());
 //    for (int j = 0; j < tangents.size(); ++j) {
 //        fprintf(stdout, "Debug: Sphere Class: tangents%d: <%f, %f, %f, %f>\n", j,
 //                tangents[j].x, tangents[j].y, tangents[j].z, tangents[j].w);
 //    }
 
-    // TODO: Debug
+    // Debug
     SPDLOG_DEBUG(spdlog::fmt_lib::format("NumIndices: {}, index: {}", this->numIndices, index));
 
     glGenVertexArrays(1, &this->sphere_vao);
