@@ -40,6 +40,7 @@
 
 // Cuda Methods
 #include "cudaInfo.cuh"
+#include "cudaMain.cuh"
 
 #include "Sphere.h"
 #include "Cube.h"
@@ -223,7 +224,9 @@ int main(int argc, char* argv[]) {
 
     // Check if we have cuda
     if (!checkCuda()) {
-        SPDLOG_ERROR("Cuda Not Avable");
+        SPDLOG_ERROR("Cuda Not Available");
+    } else {
+        cudaMainInitialize();
     }
 
     SPDLOG_INFO("setting up variables for the loop");
@@ -301,6 +304,9 @@ int main(int argc, char* argv[]) {
         // update data (often angles of things)
         updateAngle(deltaTime);
 
+        // Run Cuda update
+        cudaMainUpdate(glfwGetTime());
+
     }
     SPDLOG_INFO(spdlog::fmt_lib::format("Exit Window Loop, Avg FPS: {:0f}", avgFPS));
 
@@ -314,6 +320,9 @@ int main(int argc, char* argv[]) {
     SPDLOG_INFO("Close GLFW window and terminate GLFW");
     glfwDestroyWindow(window);
     glfwTerminate();
+
+    // Clean up cuda
+    cudaMainCleanUp();
 
     SPDLOG_INFO("Shutdown spdlog");
     spdlog::shutdown();
