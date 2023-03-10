@@ -5,13 +5,13 @@
 #include "cudaMain.cuh"
 
 // Called when setting things up before graphs loop
-void cudaMainInitialize() {
+__host__ void cudaMainInitialize() {
     SPDLOG_INFO("Initialize Cuda");
 
 }
 
 // Called for every frame
-void cudaMainUpdate(double time) {
+__host__ void cudaMainUpdate(double time) {
     bool error = false;
     if (error) {
         // Avoid logging messages
@@ -20,7 +20,7 @@ void cudaMainUpdate(double time) {
 }
 
 // Called as the program close
-void cudaMainCleanUp() {
+__host__ void cudaMainCleanUp() {
     SPDLOG_INFO("Clean Up Cuda");
 
     int someNumber = 5;
