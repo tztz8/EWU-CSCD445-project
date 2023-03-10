@@ -66,6 +66,9 @@ GLint glScreenWidth, glScreenHeight;
 // flag to know when screen size changes
 bool freeGLUTSizeUpdate;
 
+// Stop cuda flag
+bool stop_cuda = false;
+
 // title info
 std::string original_title("EWU-CSCD445-CUDA-GLFW-Project");
 
@@ -305,7 +308,9 @@ int main(int argc, char* argv[]) {
         updateAngle(deltaTime);
 
         // Run Cuda update
-        cudaMainUpdate(glfwGetTime());
+        if (!stop_cuda) {
+            cudaMainUpdate(glfwGetTime());
+        }
 
     }
     SPDLOG_INFO(spdlog::fmt_lib::format("Exit Window Loop, Avg FPS: {:0f}", avgFPS));
@@ -893,6 +898,10 @@ void ImGUIDisplay() {
                 program = initShaders(shaderPaths);
                 setUniformLocations(program);
             }
+        }
+
+        if (ImGui::CollapsingHeader("Cuda")) {
+            ImGui::Checkbox("Stop Cuda", &stop_cuda);
         }
 
         ImGui::Spacing();
