@@ -2,6 +2,22 @@
 
 Conway games of life on a cubes surface
 
+## Table of Content
+
+-   [EWU CSCD445 Project](#ewu-cscd445-project)
+    -   [Table of Content](#table-of-content)
+    -   [Team:](#team)
+    -   [Conway games of life on a cubes surface](#conway-games-of-life-on-a-cubes-surface)
+    -   [Functions](#functions)
+    -   [Min Goal](#min-goal)
+    -   [Report](#report)
+        -   [How to run/use](#how-to-runuse)
+        -   [Sample run](#sample-run)
+        -   [SpeedUp](#speedup)
+        -   [Video](#video)
+    -   [Making](#making)
+    -   [Notes](#notes)
+
 ## Team:
 
 -   `Timbre Freeman` : Email <tfreeman3@ewu.edu>
@@ -11,9 +27,10 @@ Conway games of life on a cubes surface
 
 ## Conway games of life on a cubes surface
 
-Each face of a cube will have a 2d grid of Conway games of life and their edges will interact with the connected face's
+Each face of a cube will have a 2d grid of Conway games of life and their edges will interact with the connected face’s
 
 ## Functions
+
 1.  OpenGL Cube
     1.  If we have time also have input that can effect Conway games of life as it runs
 2.  CPU Conway games of life
@@ -24,7 +41,7 @@ Each face of a cube will have a 2d grid of Conway games of life and their edges 
 
 ## Min Goal
 
-At min, a cube with each face running Conway games of life on CUDA that has the edges interact with some start state to see it run (Ex have some Glider's)
+At min, a cube with each face running Conway games of life on CUDA that has the edges interact with some start state to see it run (Ex have some Glider’s)
 
 ## Report
 
@@ -58,6 +75,6 @@ Need GLM dev
 
 ## Notes
 
-- https://github.com/tztz8/OpenGL-All
-- https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__INTEROP.html
-- https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__OPENGL.html
+-   [OpenGL Code base off](https://github.com/tztz8/OpenGL-All)
+-   [Graphics Interoperability](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__INTEROP.html)
+-   [OpenGL Interoperability](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__OPENGL.html)
