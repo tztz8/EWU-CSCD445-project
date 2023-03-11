@@ -67,7 +67,7 @@ GLint glScreenWidth, glScreenHeight;
 bool freeGLUTSizeUpdate;
 
 // Stop cuda flag
-bool stop_cuda = false;
+bool stop_cuda = true;
 
 // title info
 std::string original_title("EWU-CSCD445-CUDA-GLFW-Project");
@@ -266,8 +266,8 @@ int main(int argc, char* argv[]) {
 
                 std::string title(original_title);
                 title.append(" - [FPS: ");
-//                title.append(fmt::format("{:0f}, Avg:{:0f}", fps, avgFPS));
-                title.append(fmt::format("{:0f}", fps));
+                title.append(fmt::format("{:0f}, Avg:{:0f}", fps, avgFPS));
+//                title.append(fmt::format("{:0f}", fps));
                 title.append("]");
 
 //                snprintf(title, TITLE_LENGTH - 1,
