@@ -10,8 +10,8 @@ CUDA_FLAGS	 = -g -c -O3
 LFLAGS	 = -lm build/glfw/src/libglfw3.a -lGL -lGLEW -lGLU
 
 .PHONY: all
-all: $(OUT)
-	@echo "Made $(OUT)"
+all: $(OUT) README.pdf
+	@echo "Made $(OUT) and README.pdf"
 
 # #####################
 # #    Auto Checks    #
@@ -162,7 +162,7 @@ endif
 # clean house
 .PHONY: clean
 clean:
-	rm -rf $(OBJS) $(OUT) $(BUILD_DIR) *.log
+	rm -rf $(OBJS) $(OUT) $(BUILD_DIR) *.log README.pdf
 
 # run the program
 .PHONY: run
@@ -180,3 +180,10 @@ valgrind: $(OUT)
 .PHONY: valgrind_extreme
 valgrind_extreme: $(OUT)
 	valgrind --log-file="valgrind.log" --leak-check=full --show-leak-kinds=all --leak-resolution=high --track-origins=yes --vgdb=yes ./$(OUT) $(RUN_ARGS)
+	
+# pandoc --from markdown --to gfm --standalone --toc --wrap=none --no-highlight README.md -o README.md
+# NEED wkhtmltopdf and pandoc
+README.pdf: README.md
+	echo "pandoc --from markdown --to gfm --standalone --toc --wrap=none --no-highlight README.md -o README.md"
+	pandoc --from markdown --to gfm --standalone --wrap=none --no-highlight README.md -o README.md
+	pandoc -t html README.md -o README.pdf

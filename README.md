@@ -15,7 +15,9 @@ Conway games of life on a cubes surface
         -   [Sample run](#sample-run)
         -   [SpeedUp](#speedup)
         -   [Video](#video)
-    -   [Making](#making)
+    -   [Making the program](#making-the-program)
+        -   [For the program](#for-the-program)
+        -   [For Makefile](#for-makefile)
     -   [Notes](#notes)
 
 ## Team:
@@ -61,9 +63,11 @@ BLANK
 
 TODO Video Link
 
-## Making
+## Making the program
 
 We only test on linux
+
+### For the program
 
 Need OpenGL lib and dev
 
@@ -72,6 +76,20 @@ Need GLEW lib and dev
 Need GLU lib and dev
 
 Need GLM dev
+
+Need `git` clone [sub modules](.gitmodules)
+
+### For Makefile
+
+Need `CMake`
+
+Need `pandoc` and `wkhtmltopdf`
+
+Need `nvcc`
+
+Wants `clang`
+
+May Need `gcc`
 
 ## Notes
 
