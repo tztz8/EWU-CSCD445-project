@@ -1,8 +1,12 @@
 // Logger Lib
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
+#include <GL/gl.h>
 
 #include "cudaMain.cuh"
+
+// Texture ID
+GLuint cudaTexID;
 
 double timeStart;
 
@@ -20,6 +24,20 @@ size_t pitch;
 unsigned int shared_mem_size;
 dim3  grid;
 dim3  threads;
+
+GLuint genCudaTexImage() {
+    GLuint tid;
+    glGenTextures(1, &tid);
+    glBindTexture(GL_TEXTURE_2D, tid);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,  GL_RED,
+                 GL_FLOAT, h_dataA);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, tid);
+    return tid;
+}
 
 void initializeArrays(float *a1, float *a2, int width, int height){
     int i, j;
@@ -49,6 +67,8 @@ __host__ void cudaMainInitialize() {
     float * h_dataB= (float *)malloc(width * height * sizeof(float));
 
     initializeArrays(h_dataA, h_dataB, width, height);
+
+    cudaTexID = genCudaTexImage();
 
     // Use card 0  (See top of file to make sure you are using your assigned device.)
     cudaSetDevice(device);
@@ -206,30 +226,26 @@ __host__ void cudaMainUpdate(double time) {
         // Avoid logging messages
         SPDLOG_ERROR("Problem Happen");
     }
-//    if (time-timeStart > 0.5F) {
+    if (time-timeStart > 1.0F) {
 //        SPDLOG_INFO("Start New CUDA Kernel");
-//        timeStart = time;
-//        cudaError_t code = cudaDeviceSynchronize();
-//        if (code != cudaSuccess){
-//            SPDLOG_ERROR(spdlog::fmt_lib::format("Cuda Device Synchronize error -- {}", cudaGetErrorString(code)));
-//        }
-//        // check if kernel execution generated an error
-//        code = cudaGetLastError();
-//        if (code != cudaSuccess){
-//            SPDLOG_ERROR(spdlog::fmt_lib::format("Cuda Kernel Launch error -- {}", cudaGetErrorString(code)));
-//        }
-//        k1 <<< grid, threads, shared_mem_size >>>( d_dataA, d_dataB, pitch/sizeof(float), width);
-//    }
-    cudaError_t code = cudaDeviceSynchronize();
-    if (code != cudaSuccess){
-        SPDLOG_ERROR(spdlog::fmt_lib::format("Cuda Device Synchronize error -- {}", cudaGetErrorString(code)));
+        timeStart = time;
+        cudaError_t code = cudaDeviceSynchronize();
+        if (code != cudaSuccess){
+            SPDLOG_ERROR(spdlog::fmt_lib::format("Cuda Device Synchronize error -- {}", cudaGetErrorString(code)));
+        }
+        // check if kernel execution generated an error
+        code = cudaGetLastError();
+        if (code != cudaSuccess){
+            SPDLOG_ERROR(spdlog::fmt_lib::format("Cuda Kernel Launch error -- {}", cudaGetErrorString(code)));
+        }
+
+        // copy result from device to host
+        cudaMemcpy2D( h_dataA, width * sizeof(float), d_dataA, pitch, width * sizeof(float), height,cudaMemcpyDeviceToHost );
+        glDeleteTextures(1, &cudaTexID);
+        cudaTexID = genCudaTexImage();
+
+        k1 <<< grid, threads, shared_mem_size >>>( d_dataA, d_dataB, pitch/sizeof(float), width);
     }
-    // check if kernel execution generated an error
-    code = cudaGetLastError();
-    if (code != cudaSuccess){
-        SPDLOG_ERROR(spdlog::fmt_lib::format("Cuda Kernel Launch error -- {}", cudaGetErrorString(code)));
-    }
-    k1 <<< grid, threads, shared_mem_size >>>( d_dataA, d_dataB, pitch/sizeof(float), width);
 }
 
 // Called as the program close

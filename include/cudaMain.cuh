@@ -1,6 +1,8 @@
 #ifndef EWU_CSCD445_PROJECT_CUDAMAIN_CUH
 #define EWU_CSCD445_PROJECT_CUDAMAIN_CUH
 
+extern GLuint cudaTexID;
+
 #ifdef __CUDACC__
 
 __host__ void cudaMainInitialize();

@@ -228,6 +228,7 @@ int main(int argc, char* argv[]) {
     // Check if we have cuda
     if (!checkCuda()) {
         SPDLOG_ERROR("Cuda Not Available");
+        stop_cuda = true;
     } else {
         cudaMainInitialize();
     }
@@ -585,6 +586,7 @@ void Initialize(){
     earthTexID = loadTexture("res/textures/Earth.jpg");
     randomMadeTexID = loadTexture("res/textures/randomMade.png");
     cubeTexID = loadTexture("res/textures/wests_textures/stone wall 9.png");
+//    cubeTexID = loadTexture("res/textures/failsafe.png");
 
     // TODO: see why this is here
     // glEnable(GL_PROGRAM_POINT_SIZE);
@@ -1017,7 +1019,7 @@ void Display() {
             break;
         case Models::cube:
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, cubeTexID);
+            glBindTexture(GL_TEXTURE_2D, cudaTexID);
             break;
     }
     model_matrix = glm::scale(model_matrix, model_Scale);
