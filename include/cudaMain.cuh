@@ -5,17 +5,17 @@ extern GLuint cudaTexID;
 
 #ifdef __CUDACC__
 
-__host__ void cudaMainInitialize();
+__host__ void cudaMainInitialize(int size);
 
-__host__ void cudaMainUpdate(double time);
+__host__ void cudaMainUpdate();
 
 __host__ void cudaMainCleanUp();
 
 #else
 
-void cudaMainInitialize();
+void cudaMainInitialize(int size);
 
-void cudaMainUpdate(double time);
+void cudaMainUpdate();
 
 void cudaMainCleanUp();
 

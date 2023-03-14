@@ -42,6 +42,8 @@
 #include "cudaInfo.cuh"
 #include "cudaMain.cuh"
 
+#include "GameOfLifeCube.h"
+
 #include "Sphere.h"
 #include "Cube.h"
 
@@ -66,9 +68,6 @@ GLint glScreenWidth, glScreenHeight;
 // flag to know when screen size changes
 bool freeGLUTSizeUpdate;
 
-// Stop cuda flag
-bool stop_cuda = true;
-
 // title info
 std::string original_title("EWU-CSCD445-CUDA-GLFW-Project");
 
@@ -91,16 +90,19 @@ void Display();
 void ImGUIDisplay();
 void Initialize();
 
+
 enum class Models {
     sphere,
-    cube
+    cube,
+    gameOfLifeCube
 };
 //const Models allModels[] = {Models::sphere, Models::cube};
-std::array<Models, 2> allModels = {Models::sphere, Models::cube};
-std::array<std::string, 2> allModelsNames = {"Sphere", "Cube"};
-Models select_model = Models::cube;
+std::array<Models, 3> allModels = {Models::sphere, Models::cube, Models::gameOfLifeCube};
+std::array<std::string, 3> allModelsNames = {"Sphere", "Cube", "GameOfLifeCube"};
+Models select_model = Models::gameOfLifeCube;
 Sphere* sphere;
 Cube* cube;
+GameOfLifeCube* gameOfLife;
 
 /**
  * Main - Start of the program
@@ -198,6 +200,8 @@ int main(int argc, char* argv[]) {
     sphere = &mainSphere;
     Cube mainCube{};
     cube = &mainCube;
+    GameOfLifeCube mainGameOfLifeCube{};
+    gameOfLife = &mainGameOfLifeCube;
 #pragma clang diagnostic pop
 
     SPDLOG_INFO("Running Initialize method");
@@ -223,14 +227,6 @@ int main(int argc, char* argv[]) {
         } else {
             SPDLOG_INFO(spdlog::fmt_lib::format("Current Set Normal Key: {} : Description: {}", node.first, node.second));
         }
-    }
-
-    // Check if we have cuda
-    if (!checkCuda()) {
-        SPDLOG_ERROR("Cuda Not Available");
-        stop_cuda = true;
-    } else {
-        cudaMainInitialize();
     }
 
     SPDLOG_INFO("setting up variables for the loop");
@@ -308,10 +304,7 @@ int main(int argc, char* argv[]) {
         // update data (often angles of things)
         updateAngle(deltaTime);
 
-        // Run Cuda update
-        if (!stop_cuda) {
-            cudaMainUpdate(glfwGetTime());
-        }
+        gameOfLife->update(deltaTime, glfwGetTime());
 
     }
     SPDLOG_INFO(spdlog::fmt_lib::format("Exit Window Loop, Avg FPS: {:0f}", avgFPS));
@@ -327,8 +320,7 @@ int main(int argc, char* argv[]) {
     glfwDestroyWindow(window);
     glfwTerminate();
 
-    // Clean up cuda
-    cudaMainCleanUp();
+    gameOfLife->cleanUp();
 
     SPDLOG_INFO("Shutdown spdlog");
     spdlog::shutdown();
@@ -592,6 +584,7 @@ void Initialize(){
     // glEnable(GL_PROGRAM_POINT_SIZE);
     sphere->create();
     cube->create();
+    gameOfLife->create();
 }
 
 void ImGUIDisplay() {
@@ -902,8 +895,9 @@ void ImGUIDisplay() {
             }
         }
 
-        if (ImGui::CollapsingHeader("Cuda")) {
-            ImGui::Checkbox("Stop Cuda", &stop_cuda);
+        gameOfLife->ImGUIHeader();
+        if(select_model != Models::gameOfLifeCube) {
+            ImGui::Text("NOT USING GAME OF LIFE CUBE MODEL");
         }
 
         ImGui::Spacing();
@@ -1019,7 +1013,9 @@ void Display() {
             break;
         case Models::cube:
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, cudaTexID);
+            glBindTexture(GL_TEXTURE_2D, cubeTexID);
+            break;
+        case Models::gameOfLifeCube:
             break;
     }
     model_matrix = glm::scale(model_matrix, model_Scale);
@@ -1031,6 +1027,9 @@ void Display() {
             break;
         case Models::cube:
             cube->draw();
+            break;
+        case Models::gameOfLifeCube:
+            gameOfLife->draw();
             break;
     }
 
