@@ -577,6 +577,7 @@ void Initialize(){
 
     earthTexID = loadTexture("res/textures/Earth.jpg");
     randomMadeTexID = loadTexture("res/textures/randomMade.png");
+//    cubeTexID = loadTexture("res/textures/Test/nomalTestImage.png");
     cubeTexID = loadTexture("res/textures/wests_textures/stone wall 9.png");
 //    cubeTexID = loadTexture("res/textures/failsafe.png");
 

@@ -4,6 +4,7 @@
 #include "cudaMain.cuh"
 #include "cudaInfo.cuh"
 #include "imgui.h"
+#include "OpenGLHelperMethods.h"
 
 void GameOfLifeCube::cubeCreate() {
     SPDLOG_INFO("Initialize GameOfLife Cube");
@@ -75,37 +76,35 @@ void GameOfLifeCube::cubeCreate() {
             0.0f, 0.0f, -1.0f
     };
 
-    GLfloat cube_textures[] = { 0.75f, 2.0f/3.0f,  // v0,v1,v2,v3 (front)
-                                0.5f, 2.0f/3.0f,
-                                0.5f, 1.0f/3.0f,
-                                0.75f, 1.0f/3.0f,
+    GLfloat cube_textures[] = { 0.0f, 1.0f,  // v0,v1,v2,v3 (front)
+                                1.0f/6.0f, 1.0f,   // 0 1
+                                1.0f/6.0f, 0.0f,   // 0 1/6
+                                0.0f, 0.0f,
 
+                                4.0f/6.0f, 1.0f, // v1,v6,v7,v2 (left)
+                                4.0f/6.0f, 0.0f,
+                                3.0f/6.0f, 0.0f,
+                                3.0f/6.0f, 1.0f,
 
-                                0.75f, 2.0f/3.0f,  // v0,v3,v4,v5 (right)
-                                0.75f, 1.0f/3.0f,
-                                1.0f, 1.0f/3.0f,
-                                1.0f, 2.0f/3.0f,
+                                1.0f, 1.0f, // v7,v4,v3,v2 (bottom)
+                                1.0f, 0.0f,
+                                5.0f/6.0f, 0.0f,
+                                5.0f/6.0f, 1.0f,
 
+                                2.0f/6.0f, 1.0f, // v0,v3,v4,v5 (right)
+                                2.0f/6.0f, 0.0f,
+                                1.0f/6.0f, 0.0f,
+                                1.0f/6.0f, 1.0f,
 
-                                0.75f, 2.0f/3.0f,  // v0,v5,v6,v1 (top)
-                                0.75f, 1.0f,
-                                0.5f, 1.0f,
-                                0.5f, 2.0f/3.0f,
+                                5.0f/6.0f, 1.0f, // v0,v5,v6,v1 (top)
+                                5.0f/6.0f, 0.0f,
+                                4.0f/6.0f, 0.0f,
+                                4.0f/6.0f, 1.0f,
 
-                                0.5f, 2.0f/3.0f, // v1,v6,v7,v2 (left)
-                                0.25f, 2.0f/3.0f,
-                                0.25f, 1.0f/3.0f,
-                                0.5f, 1.0f/3.0f,
-
-                                0.5f, 0.0f,// v7,v4,v3,v2 (bottom)
-                                0.75f, 0.0f,
-                                0.75f, 1.0f/3.0f,
-                                0.5f, 1.0f/3.0f,
-
-                                0.25f, 1.0f/3.0f,// v4,v7,v6,v5 (back)
-                                0.0f, 1.0f/3.0f,
-                                0.0f, 2.0f/3.0f,
-                                0.25f, 2.0f/3.0f };
+                                3.0f/6.0f, 1.0f, // v4,v7,v6,v5 (back)
+                                3.0f/6.0f, 0.0f,
+                                2.0f/6.0f, 0.0f,
+                                2.0f/6.0f, 1.0f };
 
     glGenVertexArrays(1, &this->cube_vao);
     glBindVertexArray(this->cube_vao);
@@ -136,6 +135,8 @@ void GameOfLifeCube::cubeCreate() {
 
 void GameOfLifeCube::cpuCreate(int size) {
     SPDLOG_INFO("Initialize GameOfLife CPU code");
+    // TODO: remove using for debugging
+    this->cpuTexID = loadTexture("res/textures/Test/testImage.png");
     // TODO: make 2d grid
     // TODO: make image
 }
