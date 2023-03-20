@@ -5,6 +5,7 @@
 #include "cudaInfo.cuh"
 #include "imgui.h"
 #include "OpenGLHelperMethods.h"
+#include "GameOfLifeLogic.h"
 
 void GameOfLifeCube::cubeCreate() {
     SPDLOG_INFO("Initialize GameOfLife Cube");
@@ -181,7 +182,7 @@ void GameOfLifeCube::create() {
         this->qtyCuda = 0;
     }
     this->run = true;
-    this->speed = 1.0f;
+    this->speed = 10.0f;
     this->timeStart = 0;
 }
 
@@ -286,6 +287,9 @@ void GameOfLifeCube::cpuUpdate(double time) {
 
     // TODO: update image
     genCPUTexImg(true);
+    SPDLOG_INFO(spdlog::fmt_lib::format("State {}", this->qtyCpu));
+    printboard(this->board, this->row, this->column);
+
 }
 
 void GameOfLifeCube::genCPUTexImg(bool freeOldImg) {

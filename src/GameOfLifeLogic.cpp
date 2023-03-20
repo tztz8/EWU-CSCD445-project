@@ -1,10 +1,38 @@
-//
-// Created by tztz8 on 3/19/23.
-//
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+#include <spdlog/spdlog.h>
 
+#include <string>
 #include "GameOfLifeLogic.h"
 
-
+#define start 0
+//int wrapBoxRow = row - 1;
+#define wrapBoxRow (row - 1)
+//int wrapBoxColumn = 2*(column/3) - 1;
+#define wrapBoxColumn (2*(col/3) - 1)
+//int topstart = (column/3)*2;
+#define topstart ((col/3)*2)
+//int topend = (column/6)*5-1;
+#define topend ((col/6)*5-1)
+//int botstart = (column/6)*5;
+#define botstart ((col/6)*5)
+//int botend = column-1;
+#define botend (col - 1)
+//int frontstart = start;
+#define frontstart 0
+//int frontend= column/6-1;
+#define frontend (col/6-1)
+//int rightstart = column/6;
+#define rightstart (col/6)
+//int rightend = 2*(column/6)-1;
+#define rightend (2*(col/6)-1)
+//int backstart = 2*(column/6);
+#define backstart (2*(col/6))
+//int backend = 3*(column/6)-1;
+#define backend (3*(col/6)-1)
+//int leftstart = 3*(column/6);
+#define leftstart (3*(col/6))
+//int leftend = 4*(column/6)-1;
+#define leftend (4*(col/6)-1)
 
 int  getxlinead(int * board, int col,int y,int x)
 {
@@ -19,24 +47,20 @@ int  getylinead(int * board, int col,int y,int x)
              board[(y * col) + x]+
              board[(y * col-1) + x];
 }
-//void printboard(int  board[row][column]){
-//
-////    printf("\n");
-//    std::string printSting{};
-//    for (int i = start; i < row; ++i){
-//        for (int j = start; j < column; ++j) {
-//            if (j == rightstart || j == leftstart || j == backstart || j == topstart || j == botstart) {
-////                printf(" ");
-//                printSting.append(" ");
-//            }
-////            printf("%d", board[i][j]);
-//            printSting.append("%d", board[i][j]);
-//        }
-////        printf("\n");
-//        SPDLOG_INFO(printSting);
-//        printSting = std::string {};
-//    }
-//}
+void printboard(int * board, int row, int col){
+
+    std::string printSting{};
+    for (int i = 0; i < row; ++i){
+        for (int j = 0; j < col; ++j) {
+            if (j == rightstart || j == leftstart || j == backstart || j == topstart || j == botstart) {
+                printSting.append(" ");
+            }
+            printSting.append(spdlog::fmt_lib::format("{}", board[(i * col)+j]));
+        }
+        SPDLOG_INFO(printSting);
+        printSting = std::string {};
+    }
+}
 
 int addUpLife(int * board,int col, int i, int j)
 {
@@ -44,7 +68,7 @@ int addUpLife(int * board,int col, int i, int j)
             getxlinead(board, col, i,j)+
             getxlinead(board, col, i-1,j);
 }
-void deadorAlive(int * board,int * nextboard,int cols int value, int y, int x)
+void deadorAlive(int * board,int * nextboard, int cols, int value, int y, int x)
 {
     if(value <= 2)
         nextboard[y*cols+x]=0;
@@ -57,7 +81,7 @@ void deadorAlive(int * board,int * nextboard,int cols int value, int y, int x)
         else
             nextboard[y*cols+x]=1;
 }
-void addWrapMain(int * board,int * nextboard,int col, int j)
+void addWrapMain(int * board,int * nextboard, int row, int col, int j)
 {
     //printf("%d, %d , %d", j-1, j,j+1);
     int x=0;
@@ -73,7 +97,7 @@ void addWrapMain(int * board,int * nextboard,int col, int j)
         board[(j+1)*col+start]+
         board[(j+1)*col+start+1];
     //printf(" , %d ",x);
-    deadorAlive(board, nextboard, x, j, start);
+    deadorAlive(board, nextboard, col, x, j, start);
 
     x = board[(j-1)*col+start] +
         board[(j-1)*col+wrapBoxColumn] +
@@ -84,11 +108,11 @@ void addWrapMain(int * board,int * nextboard,int col, int j)
         board[(j+1)*col+start] +
         board[(j+1)*col+wrapBoxColumn] +
         board[(j+1)*col+wrapBoxColumn - 1];
-    deadorAlive(board, nextboard, x, j, wrapBoxColumn);
+    deadorAlive(board, nextboard, col, x, j, wrapBoxColumn);
 
 }
 
-void mergetop(int * board, * int nextboard, int col)
+void mergetop(int * board, int * nextboard, int row, int col)
 {
     int x=0;
     //merge front to topf
@@ -97,7 +121,7 @@ void mergetop(int * board, * int nextboard, int col)
            getxlinead(board,col,start,i)+
            getxlinead(board,col,start+1,i);
 
-        deadorAlive(board,nextboard,x,start,i);
+        deadorAlive(board,nextboard, col ,x,start,i);
     }
 
     for (int i = start+1; i < frontend; ++i) {
@@ -105,7 +129,7 @@ void mergetop(int * board, * int nextboard, int col)
            getxlinead(board,col,start,topstart+i)+
            getxlinead(board,col,start,i);
         //printf("%d  \n",topstart+i);
-        deadorAlive(board,nextboard,x,wrapBoxRow,i+topstart);
+        deadorAlive(board,nextboard, col,x,wrapBoxRow,i+topstart);
     }
 
     //merge back
@@ -113,7 +137,7 @@ void mergetop(int * board, * int nextboard, int col)
         x= getxlinead(board,col,wrapBoxRow,topstart+i)+
            getxlinead(board,col,start,backstart+i)+
            getxlinead(board,col,start+1,backstart+i);
-        deadorAlive(board,nextboard,x,start,i+backstart);
+        deadorAlive(board,nextboard, col, x,start,i+backstart);
     }
 
     for (int i = start+1; i < frontend; ++i) {
@@ -121,7 +145,7 @@ void mergetop(int * board, * int nextboard, int col)
            getxlinead(board,col,wrapBoxRow,topstart+i)+
            getxlinead(board,col,start,backstart+i);
 
-        deadorAlive(board,nextboard,x,start,i+topstart);
+        deadorAlive(board,nextboard, col, x,start,i+topstart);
     }
 
     //left
@@ -130,15 +154,15 @@ void mergetop(int * board, * int nextboard, int col)
             getxlinead(board,col,start,leftstart+i)+
             getxlinead(board,col,start+1,leftstart+i);
 
-        deadorAlive(board,nextboard,x,start,leftstart+i);
+        deadorAlive(board,nextboard, col, x,start,leftstart+i);
     }
 
     for (int i = start+1; i < row-1; ++i) {
         x=getylinead(board,col,i,topstart+1)+
           getylinead(board,col,i,topstart)+
           getxlinead(board,col,start,leftstart+i);
-        
-        deadorAlive(board,nextboard,x,i,topstart);
+
+        deadorAlive(board,nextboard, col, x,i,topstart);
     }
 
     //right
@@ -154,7 +178,7 @@ void mergetop(int * board, * int nextboard, int col)
            board[start+1][rightstart+i-1]+
            board[start+1][rightstart+i]+
            board[start+1][rightstart+i+1];
-        deadorAlive(board,nextboard,x,start,rightstart+i);
+        deadorAlive(board,nextboard, col, x,start,rightstart+i);
     }
 
     for (int i = start+1; i < row-1; ++i) {
@@ -167,7 +191,7 @@ void mergetop(int * board, * int nextboard, int col)
            board[start][rightstart+i-1]+
            board[start][rightstart+i]+
            board[start][rightstart+i+1];
-        deadorAlive(board,nextboard,x,i,topend);
+        deadorAlive(board,nextboard, col, x,i,topend);
     }
 }
 void mergebot(int board[row][column], int nextboard[row][column])
@@ -619,27 +643,13 @@ void mergecorners(int board[row][column],int nextboard[row][column])
     deadorAlive(board,nextboard,x,wrapBoxRow,botend);
 }
 //int board[row][column]
-nextboard[row][column]
-void runlife(int * board, int * nextboard,int inbound_row,int inbound_col)
+//nextboard[row][column]
+void runlife(int * board, int * nextboard, int inbound_row, int inbound_col)
 {
 
     int row = inbound_row;
-    int column = inbound_col*6;
-    int start = 0;
-    int wrapBoxRow = row - 1;
-    int wrapBoxColumn = 2*(column/3) - 1;
-    int topstart = (column/3)*2;
-    int topend = (column/6)*5-1;
-    int botstart = (column/6)*5;
-    int botend = column-1;
-    int frontstart = start;
-    int frontend= column/6-1;
-    int rightstart = column/6;
-    int rightend = 2*(column/6)-1;
-    int backstart = 2*(column/6);
-    int backend = 3*(column/6)-1;
-    int leftstart = 3*(column/6);
-    int leftend = 4*(column/6)-1;
+    int column = inbound_col;
+
     int x = 0;
     //body
     for (int i = start; i < row ; ++i) {
