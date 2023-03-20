@@ -220,7 +220,7 @@ void GameOfLifeCube::update(GLfloat deltaTime, double time) {
 
 void GameOfLifeCube::ImGUIHeader() {
     if (ImGui::CollapsingHeader("Game Of Life")) {
-        if (ImGui::SliderInt("Size Of World", &this->worldSize, 5, 2000)) {
+        if (ImGui::SliderInt("Size Of World (Not Setup Yet)", &this->worldSize, 5, 2000)) {
             // TODO: update world size in GPU and CPU
         }
         ImGui::SliderFloat("Speed of Game of Life (sec)",  &this->speed, 0.001f, 15.0f);
@@ -236,6 +236,8 @@ void GameOfLifeCube::ImGUIHeader() {
         ImGui::Text("CPU        Avg Time %f (ms)", this->cpuAvgTime * 1000);
         ImGui::Text("GPU (CUDA) Avg Time %f (ms)", this->cudaAvgTime * 1000);
         ImGui::Text("The avg speedup(SerialTimeCost / CudaTimeCost) when using GPU is %lf", this->cpuAvgTime / this->cudaAvgTime);
+        ImGui::Text("CPU State: %ld", this->qtyCpu);
+        ImGui::Text("GPU State: %ld", this->qtyCuda);
     }
 }
 
