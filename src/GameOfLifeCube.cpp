@@ -269,6 +269,7 @@ void GameOfLifeCube::cleanUp() {
     }
     free(this->board);
     free(this->pboard);
+    free(this->imgBoard);
 }
 
 void GameOfLifeCube::cpuUpdate(double time) {

@@ -89,6 +89,8 @@ __host__ void cudaMainInitialize(int size) {
     cudaMemcpy2D( d_dataB, pitch, h_dataB, width * sizeof(float), width * sizeof(float), height,
                   cudaMemcpyHostToDevice) ;
 
+    free(h_dataB);
+
     //***************************
     // setup CUDA execution parameters
 
@@ -250,4 +252,6 @@ __host__ void cudaMainCleanUp() {
     }
     // copy result from device to host
     cudaMemcpy2D( h_dataA, width * sizeof(float), d_dataA, pitch, width * sizeof(float), height,cudaMemcpyDeviceToHost );
+
+    free(h_dataA);
 }
