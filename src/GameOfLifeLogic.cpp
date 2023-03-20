@@ -5,29 +5,12 @@
 #include "GameOfLifeLogic.h"
 
 
-int const row = 6;
-int const column = 6*6;
-int const start = 0;
-int wrapBoxRow = row - 1;
-int wrapBoxColumn = 2*(column/3) - 1;
-int topstart = (column/3)*2;
-int topend = (column/6)*5-1;
-int botstart = (column/6)*5;
-int botend = column-1;
-int frontstart = start;
-int frontend= column/6-1;
-int rightstart = column/6;
-int rightend = 2*(column/6)-1;
-int backstart = 2*(column/6);
-int backend = 3*(column/6)-1;
-int leftstart = 3*(column/6);
-int leftend = 4*(column/6)-1;
 
-int  getxlinead(int board[row][column],int y,int x)
+int  getxlinead(int * board, int col,int y,int x)
 {
-    return   board[y][x-1]+
-             board[y][x]+
-             board[y][x+1];
+    return   board[(y * col) + x-1]+
+             board[(y * col) + x]]+
+             board[(y * col) + x+1]];
 }
 //void printboard(int  board[row][column]){
 //
@@ -48,58 +31,52 @@ int  getxlinead(int board[row][column],int y,int x)
 //    }
 //}
 
-int addUpLife(int board[row][column], int i, int j)
+int addUpLife(int * board,int col, int i, int j)
 {
-    return  board[i+1][j-1]+
-            board[i+1][j]+
-            board[i+1][j+1]+
-            board[i][j-1]+
-            board[i][j]+
-            board[i][j+1]+
-            board[i-1][j-1]+
-            board[i-1][j]+
-            board[i-1][j+1];
+    return  getxlinead(board, col, i+1,j)+
+            getxlinead(board, col, i,j)+
+            getxlinead(board, col, i-1,j);
 }
-void deadorAlive(int board[row][column],int nextboard[row][column], int x, int rows, int cols)
+void deadorAlive(int * board,int * nextboard,int cols int value, int y, int x)
 {
-    if(x <= 2)
-        nextboard[rows][cols]=0;
+    if(value <= 2)
+        nextboard[y*cols+x]=0;
     else if(x>=3)
-        if(x==3)
-            nextboard[rows][cols]=1;
+        if(value==3)
+            nextboard[y*cols+x]=1;
         else
-        if(board[rows][cols]==1)
-            nextboard[rows][cols] =0;
+        if(board[y*cols+x]==1)
+            nextboard[y*cols+x] =0;
         else
-            nextboard[rows][cols]=1;
+            nextboard[y*cols+x]=1;
 }
-void addWrapMain(int board[row][column],int nextboard[row][column],int j)
+void addWrapMain(int * board,int * nextboard,int col, int j)
 {
     //printf("%d, %d , %d", j-1, j,j+1);
     int x=0;
     if(j==0|| j== row-1)
         return;
-    x = board[j-1][wrapBoxColumn]+
-        board[j-1][start]+
-        board[j-1][start+1]+
-        board[j][wrapBoxColumn]+
-        board[j][start]+
-        board[j][start+1]+
-        board[j+1][wrapBoxColumn]+
-        board[j+1][start]+
-        board[j+1][start+1];
+    x = board[(j-1)*col+wrapBoxColumn]+
+        board[(j-1)*col+start]+
+        board[(j-1)*col+start+1]+
+        board[(j)*col+wrapBoxColumn]+
+        board[(j)*col+start]+
+        board[(j)*col+start+1]+
+        board[(j+1)*col+wrapBoxColumn]+
+        board[(j+1)*col+start]+
+        board[(j+1)*col+start+1];
     //printf(" , %d ",x);
     deadorAlive(board, nextboard, x, j, start);
 
-    x = board[j - 1][start] +
-        board[j - 1][wrapBoxColumn] +
-        board[j - 1][wrapBoxColumn - 1] +
-        board[j][start] +
-        board[j][wrapBoxColumn] +
-        board[j][wrapBoxColumn - 1] +
-        board[j + 1][start] +
-        board[j + 1][wrapBoxColumn] +
-        board[j + 1][wrapBoxColumn - 1];
+    x = board[(j-1)*col+start] +
+        board[(j-1)*col+wrapBoxColumn] +
+        board[(j-1)*col+wrapBoxColumn - 1] +
+        board[(j)*col+start] +
+        board[(j)*col+wrapBoxColumn] +
+        board[(j)*col+wrapBoxColumn - 1] +
+        board[(j+1)*col+start] +
+        board[(j+1)*col+wrapBoxColumn] +
+        board[(j+1)*col+wrapBoxColumn - 1];
     deadorAlive(board, nextboard, x, j, wrapBoxColumn);
 
 }
@@ -667,9 +644,28 @@ void mergecorners(int board[row][column],int nextboard[row][column])
     //printf("%d", frontstart);
     deadorAlive(board,nextboard,x,wrapBoxRow,botend);
 }
-
-void runlife(int board[row][column], int nextboard[row][column])
+//int board[row][column]
+nextboard[row][column]
+void runlife(int * board, int * nextboard,int inbound_row,int inbound_col)
 {
+
+    int row = inbound_row;
+    int column = inbound_col*6;
+    int start = 0;
+    int wrapBoxRow = row - 1;
+    int wrapBoxColumn = 2*(column/3) - 1;
+    int topstart = (column/3)*2;
+    int topend = (column/6)*5-1;
+    int botstart = (column/6)*5;
+    int botend = column-1;
+    int frontstart = start;
+    int frontend= column/6-1;
+    int rightstart = column/6;
+    int rightend = 2*(column/6)-1;
+    int backstart = 2*(column/6);
+    int backend = 3*(column/6)-1;
+    int leftstart = 3*(column/6);
+    int leftend = 4*(column/6)-1;
     int x = 0;
     //body
     for (int i = start; i < row ; ++i) {
