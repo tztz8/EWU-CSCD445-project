@@ -169,28 +169,18 @@ void mergetop(int * board, int * nextboard, int row, int col)
 
 
     for (int i = start+1; i < row-1; ++i) {
-        x= board[i-1][topend]+
-           board[i][topend]+
-           board[i+1][topend]+
-           board[start][rightstart+i-1]+
-           board[start][rightstart+i]+
-           board[start][rightstart+i+1]+
-           board[start+1][rightstart+i-1]+
-           board[start+1][rightstart+i]+
-           board[start+1][rightstart+i+1];
+        x= getylinead(board,col,i,topend)+
+           getxlinead(board,col,start,rightstart+1)+
+           getxlinead(board,col,start+1,rightstart+i);
+
         deadorAlive(board,nextboard, col, x,start,rightstart+i);
     }
 
     for (int i = start+1; i < row-1; ++i) {
-        x= board[i-1][topend-1]+
-           board[i][topend-1]+
-           board[i+1][topend-1]+
-           board[i-1][topend]+
-           board[i][topend]+
-           board[i+1][topend]+
-           board[start][rightstart+i-1]+
-           board[start][rightstart+i]+
-           board[start][rightstart+i+1];
+        x= getylinead(board,col,i,topend-1)+
+           getylinead(board,col,i,topend)+
+           getxlinead(board,col,start,rightstart+i);
+
         deadorAlive(board,nextboard, col, x,i,topend);
     }
 }
@@ -199,82 +189,53 @@ void mergebot(int board[row][column], int nextboard[row][column])
     int x=0;
     //merge back to bot
     for (int i = start+1; i < frontend; ++i) {
-        x= board[wrapBoxRow][botstart-1+i]+
-           board[wrapBoxRow][botstart+i]+
-           board[wrapBoxRow][botstart+1+i]+
-           board[wrapBoxRow][backstart+i-1]+
-           board[wrapBoxRow][backstart+i]+
-           board[wrapBoxRow][backstart+i+1]+
-           board[wrapBoxRow-1][backstart+i-1]+
-           board[wrapBoxRow-1][backstart+i]+
-           board[wrapBoxRow-1][backstart+i+1];
+        x=
+                getxlinead(board,col,wrapBoxRow,botstart+i)+
+                getxlinead(board,col,wrapBoxRow,backstart+i)+
+                getxlinead(board,col,wrapBoxRow-1,backstart+i);
+
         deadorAlive(board,nextboard,x,wrapBoxRow,backstart+i);
     }
-
+    ///possible problem here
     for (int i = start+1; i < frontend; ++i) {
-        x= board[start+1][botstart-1+i]+
-           board[start+1][botstart+i]+
-           board[start+1][botstart+1+i]+
-           board[start][botstart-1+i]+
-           board[start][botstart+i]+
-           board[start][botstart+1+i]+
-           board[wrapBoxRow][i-1]+
-           board[wrapBoxRow][i]+
-           board[wrapBoxRow][i+1];
+        x=      getxlinead(board,col,wrapBoxRow+1,botstart+i)+
+                getxlinead(board,col,wrapBoxRow,botstart+i)+
+                getxlinead(board,col,wrapBoxRow,backstart+i);
+
         deadorAlive(board,nextboard,x,wrapBoxRow,i+botstart);
     }
 
-    //merge front bot
+    //merge front bot reworked.
     for (int i = start+1; i <frontend; ++i) {
-        x= board[wrapBoxRow+1][botstart+i-1]+
-           board[wrapBoxRow+1][botstart+i]+
-           board[wrapBoxRow+1][botstart+i+1]+
-           board[wrapBoxRow][i-1]+
-           board[wrapBoxRow][i]+
-           board[wrapBoxRow][i+1]+
-           board[start+1][i-1]+
-           board[start+1][i]+
-           board[start+1][i+1];
+        x=      getxlinead(board,col, start ,botstart+i)+
+                getxlinead(board,col,wrapBoxRow, i)+
+                getxlinead(board,col,wrapBoxRow-1,i);
+
         deadorAlive(board,nextboard,x,wrapBoxRow,i);
     }
 
     for (int i = start+1; i < frontend; ++i) {
-        x= board[start+1][botstart-1+i]+
-           board[start+1][botstart+i]+
-           board[start+1][botstart+1+i]+
-           board[start][botstart+i-1]+
-           board[start][botstart+i]+
-           board[start][botstart+i+1]+
-           board[wrapBoxRow][i-1]+
-           board[wrapBoxRow][i]+
-           board[wrapBoxRow][i+1];
+        x=      getxlinead(board,col,start+1,botstart+i)+
+                getxlinead(board,col,start, botstart+i)+
+                getxlinead(board,col,wrapBoxRow,i);
+
         deadorAlive(board,nextboard,x,start,i+botstart);
     }
 
     //left
     for (int i = start+1; i < row-1; ++i) {
-        x= board[i-1][botstart]+
-           board[i][botstart]+
-           board[i+1][botstart]+
-           board[wrapBoxRow][leftstart+i-1]+
-           board[wrapBoxRow][leftstart+i]+
-           board[wrapBoxRow][leftstart+i+1]+
-           board[wrapBoxRow-1][leftstart+i-1]+
-           board[wrapBoxRow-1][leftstart+i]+
-           board[wrapBoxRow-1][leftstart+i+1];
+        x= getylinead(board,col,i,botstart)+
+           getxlinead(board,col,wrapBoxRow, leftstart+i)+
+           getxlinead(board,col,wrapBoxRow-1,leftstart+i);
+
         deadorAlive(board,nextboard,x,wrapBoxRow,leftstart+i);
     }
 
     for (int i = start+1; i < row; ++i) {
-        x= board[i+1][botstart+1]+
-           board[i][botstart+1]+
-           board[i-1][botstart+1]+
-           board[i+1][botstart]+
-           board[i][botstart]+
-           board[i-1][botstart]+
-           board[wrapBoxRow][leftstart+i-1]+
-           board[wrapBoxRow][leftstart+i]+
-           board[wrapBoxRow][leftstart+i+1];
+        x=  getylinead(board,col,i,botstart+1)+
+            getylinead(board,col,i,botstart)+
+            getxlinead(board,col,wrapBoxRow,leftstart+i);
+
         deadorAlive(board,nextboard,x,i,botstart);
     }
 
@@ -282,29 +243,19 @@ void mergebot(int board[row][column], int nextboard[row][column])
 
     for (int i = start+1; i < row-1; ++i) {
 
-        x= board[(i-1)][botend]+
-           board[(i)][botend]+
-           board[(i+1)][botend]+
-           board[wrapBoxRow][rightstart+i-1]+
-           board[wrapBoxRow][rightstart+i]+
-           board[wrapBoxRow][rightstart+i+1]+
-           board[wrapBoxRow-1][rightstart+i-1]+
-           board[wrapBoxRow-1][rightstart+i]+
-           board[wrapBoxRow-1][rightstart+i+1];
+        x= getylinead(board,col,i,botend)+
+           getxlinead(board,col,wrapBoxRow,rightstart+i)+
+           getxlinead(board,col,wrapBoxRow-1,rightstart+i);
+
         deadorAlive(board,nextboard,x,wrapBoxRow,rightstart+i);
     }
 
     for (int i = start+1; i < row-1; ++i) {
 
-        x= board[i-1][botend-1]+
-           board[i][botend-1]+
-           board[i+1][botend-1]+
-           board[i-1][botend]+
-           board[i][botend]+
-           board[i+1][botend]+
-           board[wrapBoxRow][rightstart+i-1]+
-           board[wrapBoxRow][rightstart+i]+
-           board[wrapBoxRow][rightstart+i+1];
+        x=  getylinead(board,col,i,botend-1)+
+            getylinead(board,col,i,botend)+
+            getxlinead(board,col,wrapBoxRow,rightstart+i);
+
         deadorAlive(board,nextboard,x,i,botend);
         //printf("i is %d, i+1 %d, i-1 %d \n", i, i+1, i-1);
     }
@@ -313,7 +264,7 @@ void mergebot(int board[row][column], int nextboard[row][column])
 
 
 
-void mergecorners(int board[row][column],int nextboard[row][column])
+void mergecorners(int * board,int nextboard[row][column])
 {
     int x =0;
 
