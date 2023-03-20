@@ -904,9 +904,11 @@ void ImGUIDisplay() {
             }
         }
 
-        if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
-            if (ImGui::CollapsingHeader("Game Pad")) {
+        if (ImGui::CollapsingHeader("Game Pad")) {
+            if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
                 ImGui::Text("%s", gamePadInfo.c_str());
+            } else {
+                ImGui::Text("Not Available");
             }
         }
 
