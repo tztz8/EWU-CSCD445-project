@@ -1259,12 +1259,21 @@ std::string gamepad(bool logGamePadButtons, GLfloat deltaTime) {
             SPDLOG_INFO(" - Right Thumb Stick left and right for rotate camera");
             returnString.append(" - Right Thumb Stick left and right for rotate camera\n");
         }
+        if (logGamePadButtons) {
+            SPDLOG_INFO(" - Hold Left Bumper and Right Thumb Stick left and right for cam rad instead");
+            returnString.append(" - Hold Left Bumper and Right Thumb Stick left and right for cam rad instead\n");
+        }
         if (std::abs(axes[3]) > dirfitCheck ) {
-            rotateAngle += axes[3] * 50.0f * deltaTime * invert;
-            if (rotateAngle >= 360.0f) {
-                rotateAngle -= 360.0f;
-            } else if(rotateAngle < 0.0f) {
-                rotateAngle += 360.0f;
+            if (buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER]) {
+                view_eye_radias += axes[3] * 5.0f * deltaTime * invert;
+                view_eye_radias = clap(view_eye_radias, 75, 1.5f);
+            } else {
+                rotateAngle += axes[3] * 50.0f * deltaTime * invert;
+                if (rotateAngle >= 360.0f) {
+                    rotateAngle -= 360.0f;
+                } else if(rotateAngle < 0.0f) {
+                    rotateAngle += 360.0f;
+                }
             }
         }
 
