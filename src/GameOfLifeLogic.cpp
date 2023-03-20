@@ -70,7 +70,30 @@ int addUpLife(int * board,int col, int i, int j)
 }
 void deadorAlive(int * board,int * nextboard, int col, int value, int y, int x)
 {
-    if(value <= 2)
+
+
+    if(board[y*col+x]==1)
+    {
+        if(value-1==2||value-1==3)
+        {
+            nextboard[y*col+x]=1;
+        }
+        else
+        {
+            nextboard[y*col+x]=0;
+        }
+    }
+    else
+    {
+        if(value==3)
+        {
+            nextboard[y*col+x]=1;
+        }
+        else
+            nextboard[y*col+x]=0;
+    }
+
+/*    if(value <= 1)
         nextboard[y*col+x]=0;
     else if(x>=3)
         if(value==3)
@@ -79,7 +102,7 @@ void deadorAlive(int * board,int * nextboard, int col, int value, int y, int x)
         if(board[y*col+x]==1)
             nextboard[y*col+x] =0;
         else
-            nextboard[y*col+x]=1;
+            nextboard[y*col+x]=1;*/
 }
 void addWrapMain(int * board,int * nextboard, int row, int col, int j)
 {
