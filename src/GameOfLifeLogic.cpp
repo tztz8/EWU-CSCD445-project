@@ -68,18 +68,18 @@ int addUpLife(int * board,int col, int i, int j)
             getxlinead(board, col, i,j)+
             getxlinead(board, col, i-1,j);
 }
-void deadorAlive(int * board,int * nextboard, int cols, int value, int y, int x)
+void deadorAlive(int * board,int * nextboard, int col, int value, int y, int x)
 {
     if(value <= 2)
-        nextboard[y*cols+x]=0;
+        nextboard[y*col+x]=0;
     else if(x>=3)
         if(value==3)
-            nextboard[y*cols+x]=1;
+            nextboard[y*col+x]=1;
         else
-        if(board[y*cols+x]==1)
-            nextboard[y*cols+x] =0;
+        if(board[y*col+x]==1)
+            nextboard[y*col+x] =0;
         else
-            nextboard[y*cols+x]=1;
+            nextboard[y*col+x]=1;
 }
 void addWrapMain(int * board,int * nextboard, int row, int col, int j)
 {
@@ -264,7 +264,7 @@ void mergebot(int * board, int * nextboard,int row, int col)
 
 
 
-void mergecorners(int * board,int * nextboard,int col)
+void mergecorners(int * board,int * nextboard,int row, int col)
 {
     int x =0;
 
@@ -277,118 +277,118 @@ void mergecorners(int * board,int * nextboard,int col)
             board[start]+
             board[start+1]+
 
-            board[(start+1)*cols+leftend]+
-            board[(start+1)*cols+start]+
-            board[(start+1)*cols+start+1];
+            board[(start+1)*col+leftend]+
+            board[(start+1)*col+start]+
+            board[(start+1)*col+start+1];
     deadorAlive(board,nextboard,col,x,start,start);
 
     // right top corner of left with warp
-    x =     board[cols*(wrapBoxRow-1)+topstart]+
-            board[cols*(wrapBoxRow)+topstart]+
+    x =     board[col*(wrapBoxRow-1)+topstart]+
+            board[col*(wrapBoxRow)+topstart]+
 
-            board[start*cols+leftend-1]+
-            board[start*cols+leftend]+
-            board[start*cols+start]+
+            board[start*col+leftend-1]+
+            board[start*col+leftend]+
+            board[start*col+start]+
 
-            board[(start+1)*cols+leftend-1]+
-            board[(start+1)*cols+leftend]+
-            board[(start+1*)cols+start+1];
+            board[(start+1)*col+leftend-1]+
+            board[(start+1)*col+leftend]+
+            board[(start+1)*col+start+1];
 
     // left bot corner of front with warp
 
     deadorAlive(board,nextboard,col,x,start,leftend);
 
-    x =     board[(wrapBoxRow-1)*cols+leftend]+
-            board[(wrapBoxRow-1)*cols+topstart]+
-            board[(wrapBoxRow-1)*cols+topstart+1]+
+    x =     board[(wrapBoxRow-1)*col+leftend]+
+            board[(wrapBoxRow-1)*col+topstart]+
+            board[(wrapBoxRow-1)*col+topstart+1]+
 
-            board[wrapBoxRow*cols+leftend]+
-            board[wrapBoxRow*cols+start]+
-            board[wrapBoxRow*cols+start+1]+
+            board[wrapBoxRow*col+leftend]+
+            board[wrapBoxRow*col+start]+
+            board[wrapBoxRow*col+start+1]+
 
-            board[start*cols+botstart]+
-            board[start*cols+botstart+1];
+            board[start*col+botstart]+
+            board[start*col+botstart+1];
 
     deadorAlive(board,nextboard,col,x,wrapBoxRow,start);
 
     // right bot corner of left with warp
-    x =     board[(wrapBoxRow-1)*cols+leftend-1]+
-            board[(wrapBoxRow-1)*cols+leftend]+
-            board[(wrapBoxRow-1)*cols+start]+
+    x =     board[(wrapBoxRow-1)*col+leftend-1]+
+            board[(wrapBoxRow-1)*col+leftend]+
+            board[(wrapBoxRow-1)*col+start]+
 
-            board[(wrapBoxRow)*cols+leftend-1]+
-            board[(wrapBoxRow)*cols+leftend]+
-            board[(wrapBoxRow)*cols+start]+
+            board[(wrapBoxRow)*col+leftend-1]+
+            board[(wrapBoxRow)*col+leftend]+
+            board[(wrapBoxRow)*col+start]+
 
-            board[start*cols+botstart]+
-            board[(start+1)*cols+botstart];
+            board[start*col+botstart]+
+            board[(start+1)*col+botstart];
 
     deadorAlive(board,nextboard,col,x,wrapBoxRow,leftend);
 
 
     // left top corners with no warps main
     // left corner right
-    x =     board[start*cols+topend]+
-            board[(start+1)*cols+topend]+
+    x =     board[start*col+topend]+
+            board[(start+1)*col+topend]+
 
-            board[start*cols+rightstart-1]+
-            board[start*cols+rightstart]+
-            board[start*cols+rightstart+1]+
+            board[start*col+rightstart-1]+
+            board[start*col+rightstart]+
+            board[start*col+rightstart+1]+
 
-            board[(start+1)*cols+rightstart-1]+
-            board[(start+1)*cols+rightstart]+
-            board[(start+1)*cols+rightstart+1];
+            board[(start+1)*col+rightstart-1]+
+            board[(start+1)*col+rightstart]+
+            board[(start+1)*col+rightstart+1];
 
     deadorAlive(board,nextboard,col,x,start,rightstart);
     //printboard(nextboard);
 
     // left corner back
-    x =     board[wrapBoxRow*cols+topstart]+
-            board[wrapBoxRow*cols+topstart+1]+
+    x =     board[wrapBoxRow*col+topstart]+
+            board[wrapBoxRow*col+topstart+1]+
 
-            board[start*cols+backstart-1]+
-            board[start*cols+backstart]+
-            board[start*cols+backstart+1]+
+            board[start*col+backstart-1]+
+            board[start*col+backstart]+
+            board[start*col+backstart+1]+
 
-            board[(start+1)*cols+backstart-1]+
-            board[(start+1)*cols+backstart]+
-            board[(start+1)*cols+backstart+1];
+            board[(start+1)*col+backstart-1]+
+            board[(start+1)*col+backstart]+
+            board[(start+1)*col+backstart+1];
 
     deadorAlive(board,nextboard,col,x,start,backstart);
     //printboard(nextboard);
 
     // left corner left
-    x =     board[start*cols+topstart]+
-            board[(start+1)*cols+topstart]+
+    x =     board[start*col+topstart]+
+            board[(start+1)*col+topstart]+
 
-            board[start*cols+leftstart-1]+
-            board[start*cols+leftstart]+
-            board[start*cols+leftstart+1]+
+            board[start*col+leftstart-1]+
+            board[start*col+leftstart]+
+            board[start*col+leftstart+1]+
 
-            board[(start+1)*cols+leftstart-1]+
-            board[(start+1)*cols+leftstart]+
-            board[(start+1)*cols+leftstart+1];
+            board[(start+1)*col+leftstart-1]+
+            board[(start+1)*col+leftstart]+
+            board[(start+1)*col+leftstart+1];
 
     deadorAlive(board,nextboard,col,x,start,leftstart);
     //printboard(nextboard);
 
     // right corner front
-    x =     board[start*cols+topend]+
-            board[start*cols+topend-1]+
+    x =     board[start*col+topend]+
+            board[start*col+topend-1]+
 
-            board[start*cols+frontend-1]+
-            board[start*cols+frontend]+
-            board[start*cols+frontend+1]+
+            board[start*col+frontend-1]+
+            board[start*col+frontend]+
+            board[start*col+frontend+1]+
 
-            board[(start+1)*cols+frontend-1]+
-            board[(start+1)*cols+frontend]+
-            board[(start+1)*cols+frontend+1];
+            board[(start+1)*col+frontend-1]+
+            board[(start+1)*col+frontend]+
+            board[(start+1)*col+frontend+1];
 
     deadorAlive(board,nextboard,col,x,start,frontend);
 
     // right corner front
-    x =     board[start*cols+topend]+
-            board[start*cols+topend-1]+
+    x =     board[start*col+topend]+
+            board[start*col+topend-1]+
 
             getxlinead(board,col,start,frontend)+
             /*           board[start][frontend-1]+
@@ -402,131 +402,131 @@ void mergecorners(int * board,int * nextboard,int col)
     deadorAlive(board,nextboard,col,x,start,frontend);
 
     // right corner right
-    x =     board[wrapBoxRow*cols+topend]+
-            board[(wrapBoxRow-1)*cols+topend]+
-            getxlinead(board,start,rightend)+
-            getxlinead(board,start+1,rightend);
+    x =     board[wrapBoxRow*col+topend]+
+            board[(wrapBoxRow-1)*col+topend]+
+            getxlinead(board, col,start,rightend)+
+            getxlinead(board, col,start+1,rightend);
 
     deadorAlive(board,nextboard,col,x,start,rightend);
 
     // right corner back
-    x =     board[wrapBoxRow*cols+topend]+
-            board[wrapBoxRow*cols+topend-1]+
-            getxlinead(board,start,backend)+
-            getxlinead(board,start+1,backend);
+    x =     board[wrapBoxRow*col+topend]+
+            board[wrapBoxRow*col+topend-1]+
+            getxlinead(board, col,start,backend)+
+            getxlinead(board, col,start+1,backend);
 
     deadorAlive(board,nextboard,col,x,start,backend);
 
 
     // left bot corners with no warps main
     // right corner front
-    x =     board[wrapBoxRow*cols+botend]+
-            board[wrapBoxRow*cols+botend-1]+
-            getxlinead(board,wrapBoxRow,frontend)+
-            getxlinead(board,wrapBoxRow-1,frontend);
+    x =     board[wrapBoxRow*col+botend]+
+            board[wrapBoxRow*col+botend-1]+
+            getxlinead(board, col,wrapBoxRow,frontend)+
+            getxlinead(board, col,wrapBoxRow-1,frontend);
 
     deadorAlive(board,nextboard,col,x,wrapBoxRow,frontend);
 
     // right corner right
-    x =     board[start][botend]+
-            board[start+1][botend]+
-            getxlinead(board,wrapBoxRow,rightend)+
-            getxlinead(board,wrapBoxRow-1,rightend);
+    x =     board[(start * col) + botend]+
+            board[((start+1) * col) + botend]+
+            getxlinead(board, col,wrapBoxRow,rightend)+
+            getxlinead(board, col,wrapBoxRow-1,rightend);
 
     deadorAlive(board,nextboard,col,x,wrapBoxRow,rightend);
 
     // right corner back
-    x =     board[start*cols+botstart]+
-            board[start*cols+botstart+1]+
-            getxlinead(board,wrapBoxRow,backend)+
-            getxlinead(board,wrapBoxRow-1,backend);
+    x =     board[start*col+botstart]+
+            board[start*col+botstart+1]+
+            getxlinead(board, col,wrapBoxRow,backend)+
+            getxlinead(board, col,wrapBoxRow-1,backend);
 
     deadorAlive(board,nextboard,col,x,wrapBoxRow,backend);
 
     // bot left corners of main
     // left corner right
-    x =     board[start*cols+botstart]+
-            board[(start+1)*cols+botstart]+
-            getxlinead(board,wrapBoxRow,rightstart)+
-            getxlinead(board,wrapBoxRow-1,rightstart);
+    x =     board[start*col+botstart]+
+            board[(start+1)*col+botstart]+
+            getxlinead(board, col,wrapBoxRow,rightstart)+
+            getxlinead(board, col,wrapBoxRow-1,rightstart);
     deadorAlive(board,nextboard,col,x,wrapBoxRow,rightstart);
 
     //printboard(nextboard);
 
     // bot left corners of main
     // left corner back
-    x =     board[start*cols+botend]+
-            board[start*cols+botend-1]+
-            getxlinead(board,wrapBoxRow,backstart)+
-            getxlinead(board,wrapBoxRow-1,backstart);
+    x =     board[start*col+botend]+
+            board[start*col+botend-1]+
+            getxlinead(board, col,wrapBoxRow,backstart)+
+            getxlinead(board, col,wrapBoxRow-1,backstart);
     deadorAlive(board,nextboard,col,x,wrapBoxRow,backstart);
 
     //printboard(nextboard);
     // bot left corners of main
     // left corner left
-    x =     board[start*cols+botstart]+
-            board[(start+1)*cols+botstart]+
-            getxlinead(board,wrapBoxRow,leftstart)+
-            getxlinead(board,wrapBoxRow-1,backstart);
+    x =     board[start*col+botstart]+
+            board[(start+1)*col+botstart]+
+            getxlinead(board, col,wrapBoxRow,leftstart)+
+            getxlinead(board, col,wrapBoxRow-1,backstart);
     deadorAlive(board,nextboard,col,x,wrapBoxRow,leftstart);
 
     //printboard(nextboard);
 
     //topmerge corner
     //top front
-    x =     board[start*cols+start]+
-            board[start*cols+start+1]+
+    x =     board[start*col+start]+
+            board[start*col+start+1]+
 
-            board[start*cols+leftstart]+
-            board[start*cols+topstart]+
-            board[start*cols+topstart+1]+
+            board[start*col+leftstart]+
+            board[start*col+topstart]+
+            board[start*col+topstart+1]+
 
-            board[(start+1)*cols+leftstart]+
-            board[(start+1)*cols+topstart]+
-            board[(start+1)*cols+topstart+1];
+            board[(start+1)*col+leftstart]+
+            board[(start+1)*col+topstart]+
+            board[(start+1)*col+topstart+1];
 
     deadorAlive(board,nextboard,col,x,start,topstart);
 
     //top right
-    x =     board[start*cols+frontend-1]+
-            board[start*cols+frontend]+
+    x =     board[start*col+frontend-1]+
+            board[start*col+frontend]+
 
-            board[start*cols+topend-1]+
-            board[start*cols+topend]+
-            board[start*cols+rightstart]+
+            board[start*col+topend-1]+
+            board[start*col+topend]+
+            board[start*col+rightstart]+
 
-            board[(start+1)*cols+topend-1]+
-            board[(start+1)*cols+topend]+
-            board[(start+1)*cols+rightstart];
+            board[(start+1)*col+topend-1]+
+            board[(start+1)*col+topend]+
+            board[(start+1)*col+rightstart];
 
     deadorAlive(board,nextboard,col,x,start,topend);
 
     //top left
-    x =     board[start*cols+leftstart+1]+
-            board[(wrapBoxRow-1)*cols+topstart]+
-            board[(wrapBoxRow-1)*cols+topstart+1]+
+    x =     board[start*col+leftstart+1]+
+            board[(wrapBoxRow-1)*col+topstart]+
+            board[(wrapBoxRow-1)*col+topstart+1]+
 
-            board[start*cols+leftstart]+
-            board[wrapBoxRow*cols+topstart]+
-            board[wrapBoxRow*cols+topstart+1]+
+            board[start*col+leftstart]+
+            board[wrapBoxRow*col+topstart]+
+            board[wrapBoxRow*col+topstart+1]+
 
-            board[start*cols+backstart]+
-            board[start*cols+backstart+1];
+            board[start*col+backstart]+
+            board[start*col+backstart+1];
 
 
     //printf("%d", frontstart);
     deadorAlive(board,nextboard,col,x,wrapBoxRow,topstart);
 
-    x =     board[start*cols+rightend-1]+
-            board[(wrapBoxRow-1)*cols+topend]+
-            board[(wrapBoxRow-1)*cols+topend-1]+
+    x =     board[start*col+rightend-1]+
+            board[(wrapBoxRow-1)*col+topend]+
+            board[(wrapBoxRow-1)*col+topend-1]+
 
-            board[start*cols+rightend]+
-            board[wrapBoxRow*cols+topend]+
-            board[wrapBoxRow*cols+topend-1]+
+            board[start*col+rightend]+
+            board[wrapBoxRow*col+topend]+
+            board[wrapBoxRow*col+topend-1]+
 
-            board[start*cols+backstart]+
-            board[start*cols+backstart+1];
+            board[start*col+backstart]+
+            board[start*col+backstart+1];
 
 
     //printf("%d", frontstart);
@@ -535,59 +535,59 @@ void mergecorners(int * board,int * nextboard,int col)
 
     //botmerge corner
     //bot front
-    x =     board[wrapBoxRow*cols+start]+
-            board[wrapBoxRow*cols+start+1]+
+    x =     board[wrapBoxRow*col+start]+
+            board[wrapBoxRow*col+start+1]+
 
-            board[start*cols+leftstart]+
-            board[start*cols+botstart]+
-            board[start*cols+botstart+1]+
+            board[start*col+leftstart]+
+            board[start*col+botstart]+
+            board[start*col+botstart+1]+
 
-            board[(wrapBoxRow+1)][leftstart]+
-            board[(start+1)*cols+botstart]+
-            board[(start+1)*cols+botstart+1];
+            board[((wrapBoxRow+1) * col) + leftstart]+
+            board[(start+1)*col+botstart]+
+            board[(start+1)*col+botstart+1];
 
     deadorAlive(board,nextboard,col,x,start,botstart);
 
     //bot right
-    x =     board[wrapBoxRow*cols+frontend-1]+
-            board[wrapBoxRow*cols+frontend]+
+    x =     board[wrapBoxRow*col+frontend-1]+
+            board[wrapBoxRow*col+frontend]+
 
-            board[start*cols+botend-1]+
-            board[start*cols+botend]+
-            board[wrapBoxRow*cols+rightstart]+
+            board[start*col+botend-1]+
+            board[start*col+botend]+
+            board[wrapBoxRow*col+rightstart]+
 
-            board[(start+1)*cols+botend-1]+
-            board[(start+1)*cols+botend]+
-            board[(wrapBoxRow-1)*cols+rightstart];
+            board[(start+1)*col+botend-1]+
+            board[(start+1)*col+botend]+
+            board[(wrapBoxRow-1)*col+rightstart];
 
     deadorAlive(board,nextboard,col,x,start,botend);
 
     //top left
-    x =     board[wrapBoxRow*cols+leftstart+1]+
-            board[(wrapBoxRow-1)*cols+botstart]+
-            board[(wrapBoxRow-1)*cols+botstart+1]+
+    x =     board[wrapBoxRow*col+leftstart+1]+
+            board[(wrapBoxRow-1)*col+botstart]+
+            board[(wrapBoxRow-1)*col+botstart+1]+
 
-            board[wrapBoxRow*cols+leftstart]+
-            board[wrapBoxRow*cols+botstart]+
-            board[wrapBoxRow*cols+botstart+1]+
+            board[wrapBoxRow*col+leftstart]+
+            board[wrapBoxRow*col+botstart]+
+            board[wrapBoxRow*col+botstart+1]+
 
-            board[wrapBoxRow*cols+backstart]+
-            board[wrapBoxRow*cols+backstart+1];
+            board[wrapBoxRow*col+backstart]+
+            board[wrapBoxRow*col+backstart+1];
 
 
     //printf("%d", frontstart);
     deadorAlive(board,nextboard,col,x,wrapBoxRow,botstart);
 
-    x =     board[wrapBoxRow*cols+rightend-1]+
-            board[(wrapBoxRow-1)*cols+botend]+
-            board[(wrapBoxRow-1)*cols+botend-1]+
+    x =     board[wrapBoxRow*col+rightend-1]+
+            board[(wrapBoxRow-1)*col+botend]+
+            board[(wrapBoxRow-1)*col+botend-1]+
 
-            board[wrapBoxRow*cols+rightend]+
-            board[wrapBoxRow*cols+botend]+
-            board[wrapBoxRow*cols+botend-1]+
+            board[wrapBoxRow*col+rightend]+
+            board[wrapBoxRow*col+botend]+
+            board[wrapBoxRow*col+botend-1]+
 
-            board[wrapBoxRow*cols+backstart]+
-            board[wrapBoxRow*cols+backstart+1];
+            board[wrapBoxRow*col+backstart]+
+            board[wrapBoxRow*col+backstart+1];
 
 
     //printf("%d", frontstart);
@@ -600,25 +600,26 @@ void runlife(int * board, int * nextboard, int inbound_row, int inbound_col)
 
     int row = inbound_row;
     int column = inbound_col;
+    int col = inbound_col;
 
     int x = 0;
     //body
     for (int i = start; i < row ; ++i) {
         for (int j = start; j < wrapBoxColumn ; ++j) {
             if(i==0){
-                mergetop(board,nextboard,column);
+                mergetop(board,nextboard, row, column);
                 x = addUpLife(board, i, j,column);
             }
             else if(i==row-1)
             {
-                mergebot(board, nextboard,column);
+                mergebot(board, nextboard, row,column);
             }
             else if(j==start||j==wrapBoxColumn){
-                addWrapMain(board,nextboard,column,i);
+                addWrapMain(board,nextboard, row,column,i);
                 //x = addUpLife(board, i, j);
             }
             else {
-                x = addUpLife(board, i, j);
+                x = addUpLife(board, col, i, j);
                 deadorAlive(board, nextboard,column, x, i, j);
             }
         }
@@ -644,10 +645,10 @@ void runlife(int * board, int * nextboard, int inbound_row, int inbound_col)
             deadorAlive(board,nextboard,col,x,i,j);
         }
     }
-    mergetop(board,nextboard,column);
+    mergetop(board,nextboard, row,column);
 
     //printboard(nextboard);
-    mergecorners(board,nextboard,column);
+    mergecorners(board,nextboard, row,column);
     /*printf("\n");
     printboard(nextboard);
 */
