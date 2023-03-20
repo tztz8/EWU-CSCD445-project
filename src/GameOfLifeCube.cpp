@@ -91,20 +91,20 @@ void GameOfLifeCube::cubeCreate() {
                                 5.0f/6.0f, 0.0f,
                                 5.0f/6.0f, 1.0f,
 
+                                1.0f/6.0f, 1.0f,
                                 2.0f/6.0f, 1.0f, // v0,v3,v4,v5 (right)
                                 2.0f/6.0f, 0.0f,
                                 1.0f/6.0f, 0.0f,
-                                1.0f/6.0f, 1.0f,
 
-                                5.0f/6.0f, 1.0f, // v0,v5,v6,v1 (top)
                                 5.0f/6.0f, 0.0f,
                                 4.0f/6.0f, 0.0f,
                                 4.0f/6.0f, 1.0f,
+                                5.0f/6.0f, 1.0f, // v0,v5,v6,v1 (top)
 
-                                3.0f/6.0f, 1.0f, // v4,v7,v6,v5 (back)
-                                3.0f/6.0f, 0.0f,
+                                3.0f/6.0f, 0.0f, // v4,v7,v6,v5 (back)
                                 2.0f/6.0f, 0.0f,
-                                2.0f/6.0f, 1.0f };
+                                2.0f/6.0f, 1.0f,
+                                3.0f/6.0f, 1.0f };
 
     glGenVertexArrays(1, &this->cube_vao);
     glBindVertexArray(this->cube_vao);
