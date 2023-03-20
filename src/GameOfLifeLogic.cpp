@@ -9,8 +9,15 @@
 int  getxlinead(int * board, int col,int y,int x)
 {
     return   board[(y * col) + x-1]+
-             board[(y * col) + x]]+
-             board[(y * col) + x+1]];
+             board[(y * col) + x]+
+             board[(y * col) + x+1];
+}
+
+int  getylinead(int * board, int col,int y,int x)
+{
+    return   board[(y * col+1) + x]+
+             board[(y * col) + x]+
+             board[(y * col-1) + x];
 }
 //void printboard(int  board[row][column]){
 //
@@ -81,89 +88,56 @@ void addWrapMain(int * board,int * nextboard,int col, int j)
 
 }
 
-void mergetop(int board[row][column], int nextboard[row][column])
+void mergetop(int * board, * int nextboard, int col)
 {
     int x=0;
     //merge front to topf
     for (int i = start+1; i < frontend; ++i) {
-        x= board[start][topstart-1+i]+
-           board[start][topstart+i]+
-           board[start][topstart+1+i]+
-           board[start][i-1]+
-           board[start][i]+
-           board[start][i+1]+
-           board[start+1][i-1]+
-           board[start+1][i]+
-           board[start+1][i+1];
+        x= getxlinead(board,col,start,topstart+i)+
+           getxlinead(board,col,start,i)+
+           getxlinead(board,col,start+1,i);
 
         deadorAlive(board,nextboard,x,start,i);
     }
 
     for (int i = start+1; i < frontend; ++i) {
-        x= board[start+1][topstart-1+i]+
-           board[start+1][topstart+i]+
-           board[start+1][topstart+1+i]+
-           board[start][topstart-1+i]+
-           board[start][topstart+i]+
-           board[start][topstart+1+i]+
-           board[start][i-1]+
-           board[start][i]+
-           board[start][i+1];
+        x= getxlinead(board,col,start+1,topstart+i)+
+           getxlinead(board,col,start,topstart+i)+
+           getxlinead(board,col,start,i);
         //printf("%d  \n",topstart+i);
         deadorAlive(board,nextboard,x,wrapBoxRow,i+topstart);
     }
 
     //merge back
     for (int i = start+1; i <frontend; ++i) {
-        x= board[wrapBoxRow][topstart-1+i]+
-           board[wrapBoxRow][topstart+i]+
-           board[wrapBoxRow][topstart+1+i]+
-           board[start][backstart+i-1]+
-           board[start][backstart+i]+
-           board[start][backstart+i+1]+
-           board[start+1][backstart+i-1]+
-           board[start+1][backstart+i]+
-           board[start+1][backstart+i+1];
+        x= getxlinead(board,col,wrapBoxRow,topstart+i)+
+           getxlinead(board,col,start,backstart+i)+
+           getxlinead(board,col,start+1,backstart+i);
         deadorAlive(board,nextboard,x,start,i+backstart);
     }
 
     for (int i = start+1; i < frontend; ++i) {
-        x= board[wrapBoxRow-1][topstart-1+i]+
-           board[wrapBoxRow-1][topstart+i]+
-           board[wrapBoxRow-1][topstart+1+i]+
-           board[wrapBoxRow][topstart+i-1]+
-           board[wrapBoxRow][topstart+i]+
-           board[wrapBoxRow][topstart+i+1]+
-           board[start][backstart+i-1]+
-           board[start][backstart+i]+
-           board[start][backstart+i+1];
+        x= getxlinead(board,col,wrapBoxRow-1,topstart+i)+
+           getxlinead(board,col,wrapBoxRow,topstart+i)+
+           getxlinead(board,col,start,backstart+i);
+
         deadorAlive(board,nextboard,x,start,i+topstart);
     }
 
     //left
     for (int i = start+1; i < row-1; ++i) {
-        x= board[i-1][topstart]+
-           board[i][topstart]+
-           board[i+1][topstart]+
-           board[start][leftstart+i-1]+
-           board[start][leftstart+i]+
-           board[start][leftstart+i+1]+
-           board[start+1][leftstart+i-1]+
-           board[start+1][leftstart+i]+
-           board[start+1][leftstart+i+1];
+        x=  getylinead(board,col,i,topstart)+
+            getxlinead(board,col,start,leftstart+i)+
+            getxlinead(board,col,start+1,leftstart+i);
+
         deadorAlive(board,nextboard,x,start,leftstart+i);
     }
 
     for (int i = start+1; i < row-1; ++i) {
-        x= board[i+1][topstart+1]+
-           board[i][topstart+1]+
-           board[i-1][topstart+1]+
-           board[i+1][topstart]+
-           board[i][topstart]+
-           board[i-1][topstart]+
-           board[start][leftstart+i-1]+
-           board[start][leftstart+i]+
-           board[start][leftstart+i+1];
+        x=getylinead(board,col,i,topstart+1)+
+          getylinead(board,col,i,topstart)+
+          getxlinead(board,col,start,leftstart+i);
+        
         deadorAlive(board,nextboard,x,i,topstart);
     }
 
