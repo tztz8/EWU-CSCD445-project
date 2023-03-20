@@ -39,6 +39,11 @@ private:
     float cpuTime;
     double cpuAvgTime;
     long qtyCpu;
+
+    int row;
+    int column;
+    int *board;
+    int *pboard;
 public:
     void create();
     void ImGUIHeader();

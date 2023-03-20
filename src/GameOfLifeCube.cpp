@@ -137,8 +137,18 @@ void GameOfLifeCube::cpuCreate(int size) {
     SPDLOG_INFO("Initialize GameOfLife CPU code");
     // TODO: remove using for debugging
     this->cpuTexID = loadTexture("res/textures/Test/testImage.png");
-    // TODO: make 2d grid
+
+    this->row = size;
+    this->column = size * 6;
+
+    // make 2d grid
+    this->board = (int *) calloc(this->row * this->column, sizeof(int));
+    this->pboard = (int *) calloc(this->row * this->column, sizeof(int));
+
+    // TODO: make a glider
+
     // TODO: make image
+
 }
 
 void GameOfLifeCube::create() {
@@ -244,21 +254,15 @@ void GameOfLifeCube::ImGUIHeader() {
 void GameOfLifeCube::cleanUp() {
     if (this->havaCuda) {
         cudaMainCleanUp();
-        cudaEventDestroy(this->launch_begin);
-        cudaEventDestroy(this->launch_end);
+//        cudaEventDestroy(this->launch_begin);
+//        cudaEventDestroy(this->launch_end);
     }
+    free(this->board);
+    free(this->pboard);
 }
 
 void GameOfLifeCube::cpuUpdate(double time) {
     // TODO: CPU code
-    for (int i = 0; i < this->worldSize * 6; ++i) {
-        for (int j = 0; j < this->worldSize; ++j) {
-            int m = i%j;
-            ;
-            ;
-            ;
-            ;
-            ;
-        }
-    }
+//    runlife(this->board, this->pboard, this->row, this->column);
+    // TODO: update image
 }
