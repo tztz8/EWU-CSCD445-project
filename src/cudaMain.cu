@@ -168,22 +168,42 @@ __device__ int deadorAlive(int value, int current)
             return 0;
     }
 }
-
-__global__ void k1( int *g_board, int *g_nextboard, int col, int row, int wrapBoxColumn)
+//add WrapMain from CPU
+__global__ void k1( int *board, int *nextboard, int col, int row, int start, int wrapBoxColumn)
 {
-    
-
     // global thread(data) row index
     unsigned int i = blockIdx.y * blockDim.y + threadIdx.y;
 
     // global thread(data) column index
     unsigned int j = blockIdx.x * blockDim.x + threadIdx.x;
 
+    int x;
+    if(i < row - 1 && j < col - 1)
+    {
+        x = board[(j-1)*col+wrapBoxColumn]+
+            board[(j-1)*col+start]+
+            board[(j-1)*col+start+1]+
+            board[(j)*col+wrapBoxColumn]+
+            board[(j)*col+start]+
+            board[(j)*col+start+1]+
+            board[(j+1)*col+wrapBoxColumn]+
+            board[(j+1)*col+start]+
+            board[(j+1)*col+start+1];
+
+        nextboard[i*col+x] = deadorAlive(x, board[i*col+x]);
+
+        x = board[(j-1)*col+start] +
+            board[(j-1)*col+wrapBoxColumn] +
+            board[(j-1)*col+wrapBoxColumn - 1] +
+            board[(j)*col+start] +
+            board[(j)*col+wrapBoxColumn] +
+            board[(j)*col+wrapBoxColumn - 1] +
+            board[(j+1)*col+start] +
+            board[(j+1)*col+wrapBoxColumn] +
+            board[(j+1)*col+wrapBoxColumn - 1];
+        nextboard[i*col+x] = deadorAlive(x, board[i*col+x]);
+    }
     
-
-
-
-
 }
 //kept just in case it has usful info
 __global__ void oldk1_from_hmwk( float* g_dataA, float* g_dataB, int floatpitch, int width)
