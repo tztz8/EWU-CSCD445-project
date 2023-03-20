@@ -145,8 +145,48 @@ __host__ void cudaMainInitialize(int size) {
 
     cudaEventRecord(launch_begin,0);
 }
+__device__ int deadorAlive(int value, int current)
+{
+    if(current==1)
+    {
+        if(value-1==2||value-1==3)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        if(value==3)
+        {
+            return 1;
+        }
+        else
+            return 0;
+    }
+}
 
-__global__ void k1( float* g_dataA, float* g_dataB, int floatpitch, int width)
+__global__ void k1( int *g_board, int *g_nextboard, int col, int row, int wrapBoxColumn)
+{
+    
+
+    // global thread(data) row index
+    unsigned int i = blockIdx.y * blockDim.y + threadIdx.y;
+
+    // global thread(data) column index
+    unsigned int j = blockIdx.x * blockDim.x + threadIdx.x;
+
+    
+
+
+
+
+}
+//kept just in case it has usful info
+__global__ void oldk1_from_hmwk( float* g_dataA, float* g_dataB, int floatpitch, int width)
 {
     extern __shared__ float s_data[];
     //Write this kernel to achieve the same output as the provided k0, but you will have to use
