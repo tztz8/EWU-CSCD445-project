@@ -7,6 +7,7 @@
 
 // TODO: fix this (Ex. hava row and col passed in)
 //void runlife(int board[6][6*6], int nextboard[6][6*6]);
+void runlife(int * board, int * nextboard, int inbound_row, int inbound_col);
 
 void printboard(int * board, int row, int col);
 

@@ -78,9 +78,13 @@ void GameOfLifeCube::cubeCreate() {
     };
 
     GLfloat cube_textures[] = { 0.0f, 1.0f,  // v0,v1,v2,v3 (front)
-                                1.0f/6.0f, 1.0f,   // 0 1
-                                1.0f/6.0f, 0.0f,   // 0 1/6
+                                1.0f, 1.0f,   // 0 1
+                                1.0, 0.0f,   // 0 1/6
                                 0.0f, 0.0f,
+//                                0.0f, 1.0f,  // v0,v1,v2,v3 (front)
+//                                1.0f/6.0f, 1.0f,   // 0 1
+//                                1.0f/6.0f, 0.0f,   // 0 1/6
+//                                0.0f, 0.0f,
 
                                 4.0f/6.0f, 1.0f, // v1,v6,v7,v2 (left)
                                 4.0f/6.0f, 0.0f,
@@ -137,7 +141,7 @@ void GameOfLifeCube::cubeCreate() {
 void GameOfLifeCube::cpuCreate(int size) {
     SPDLOG_INFO("Initialize GameOfLife CPU code");
     // TODO: remove using for debugging
-    this->cpuTexID = loadTexture("res/textures/Test/testImage.png");
+//    this->cpuTexID = loadTexture("res/textures/Test/testImage.png");
 
     this->row = size;
     this->column = size * 6;
@@ -151,9 +155,8 @@ void GameOfLifeCube::cpuCreate(int size) {
 //    this->board[(1 * column )+ 3] = 255;
 //    this->board[(2 * column )+ 3] = 255;
 //    this->board[(3 * column )+ 3] = 255;
-    for (int i = 0; i < size; ++i) {
-        this->board[(i * row )+ 3] = 1;
-        this->pboard[(i * row )+ 3] = 1;
+    for (int i = 0; i < column; ++i) {
+        this->board[(3 * column )+ i] = 1;
     }
 
 
@@ -182,7 +185,7 @@ void GameOfLifeCube::create() {
         this->qtyCuda = 0;
     }
     this->run = true;
-    this->speed = 10.0f;
+    this->speed = 5.0f;
     this->timeStart = 0;
 }
 
@@ -274,11 +277,11 @@ void GameOfLifeCube::cleanUp() {
 
 void GameOfLifeCube::cpuUpdate(double time) {
     // TODO: CPU code
-//    runlife(this->board, this->pboard, this->row, this->column);
+    runlife(this->board, this->pboard, this->row, this->column);
     // swap boards
     int *tempBoard = this->pboard;
     this->pboard = this->board;
-    this->pboard = tempBoard;
+    this->board = tempBoard;
 
     for (int i = 0; i < this->row; ++i) {
         for (int j = 0; j < this->column; ++j) {
