@@ -51,6 +51,8 @@ At min, a cube with each face running Conway games of life on CUDA that has the 
 
 BLANK
 
+Need the [project](project) executable and [res](res) folder to run
+
 ### Sample run
 
 BLANK
