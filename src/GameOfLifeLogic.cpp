@@ -254,7 +254,7 @@ void mergebot(int * board, int * nextboard,int row, int col)
         deadorAlive(board,nextboard,col,x,wrapBoxRow,leftstart+i);
     }
 
-    for (int i = start+1; i < row; ++i) {
+    for (int i = start+1; i < row-1; ++i) {
         x=  getylinead(board,col,i,botstart+1)+
             getylinead(board,col,i,botstart)+
             getxlinead(board,col,wrapBoxRow,leftstart+i);
