@@ -26,6 +26,7 @@ private:
 
     // Texture ID
     GLuint cpuTexID;
+    void genCPUTexImg(bool freeOldImg);
 
     void cubeCreate();
     void cpuCreate(int size);
@@ -44,6 +45,7 @@ private:
     int column;
     int *board;
     int *pboard;
+    int *imgBoard;
 public:
     void create();
     void ImGUIHeader();
