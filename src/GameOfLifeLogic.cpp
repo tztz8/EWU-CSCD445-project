@@ -606,20 +606,20 @@ void runlife(int * board, int * nextboard, int inbound_row, int inbound_col)
     for (int i = start; i < row ; ++i) {
         for (int j = start; j < wrapBoxColumn ; ++j) {
             if(i==0){
-                mergetop(board,nextboard);
-                x = addUpLife(board, i, j);
+                mergetop(board,nextboard,column);
+                x = addUpLife(board, i, j,column);
             }
             else if(i==row-1)
             {
-                mergebot(board, nextboard);
+                mergebot(board, nextboard,column);
             }
             else if(j==start||j==wrapBoxColumn){
-                addWrapMain(board,nextboard,i);
+                addWrapMain(board,nextboard,column,i);
                 //x = addUpLife(board, i, j);
             }
             else {
                 x = addUpLife(board, i, j);
-                deadorAlive(board, nextboard,col, x, i, j);
+                deadorAlive(board, nextboard,column, x, i, j);
             }
         }
     }
@@ -631,8 +631,8 @@ void runlife(int * board, int * nextboard, int inbound_row, int inbound_col)
 
     for (int i = start+1; i < row-1; ++i) {
         for (int j =topstart+1; j <=topend-1 ; ++j) {
-            x = addUpLife(board,i,j);
-            deadorAlive(board,nextboard,col,x,i,j);
+            x = addUpLife(board,column,i,j);
+            deadorAlive(board,nextboard,column,x,i,j);
         }
     }
 
@@ -640,14 +640,14 @@ void runlife(int * board, int * nextboard, int inbound_row, int inbound_col)
 
     for (int i = start+1; i < row-1; ++i) {
         for (int j = botstart+1; j <= botend-1; ++j) {
-            x= addUpLife(board,i,j);
+            x= addUpLife(board,column,i,j);
             deadorAlive(board,nextboard,col,x,i,j);
         }
     }
-    mergetop(board,nextboard);
+    mergetop(board,nextboard,column);
 
     //printboard(nextboard);
-    mergecorners(board,nextboard);
+    mergecorners(board,nextboard,column);
     /*printf("\n");
     printboard(nextboard);
 */
