@@ -19,12 +19,6 @@ int width;
 int height;
 int threadsPerBlock;
 
-size_t pitch;
-
-unsigned int shared_mem_size;
-dim3  grid;
-dim3  threads;
-
 GLuint genCudaTexImage() {
     GLuint tid;
     glGenTextures(1, &tid);
@@ -37,21 +31,6 @@ GLuint genCudaTexImage() {
 
     glBindTexture(GL_TEXTURE_2D, tid);
     return tid;
-}
-
-void initializeArrays(float *a1, float *a2, int width, int height){
-    int i, j;
-
-    for(i=0; i<height; i++){
-        for(j=0; j<width; j++){
-            if(i==0 || j ==0 || i==height-1 || j==width-1){
-                a1[i*width + j] = 5.0;
-                a2[i*width + j] = 5.0;
-            } else {
-                a1[i*width + j] = 1.0;
-            }
-        }
-    }
 }
 
 // Called when setting things up before graphs loop
@@ -145,6 +124,7 @@ __host__ void cudaMainInitialize(int size) {
 
     cudaEventRecord(launch_begin,0);
 }
+
 __device__ int deadorAlive(int value, int current)
 {
     if(current==1)
@@ -298,7 +278,7 @@ __host__ void cudaMainUpdate() {
     glDeleteTextures(1, &cudaTexID);
     cudaTexID = genCudaTexImage();
 
-    k1 <<< grid, threads, shared_mem_size >>>( d_dataA, d_dataB, pitch/sizeof(float), width);
+    //k1 <<< grid, threads, shared_mem_size >>>( d_dataA, d_dataB, pitch/sizeof(float), width);
 }
 
 // Called as the program close
