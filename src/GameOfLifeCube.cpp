@@ -141,8 +141,6 @@ void GameOfLifeCube::cubeCreate() {
 
 void GameOfLifeCube::cpuCreate(int size) {
     SPDLOG_INFO("Initialize GameOfLife CPU code");
-    // TODO: remove using for debugging
-//    this->cpuTexID = loadTexture("res/textures/Test/testImage.png");
 
     this->row = size;
     this->column = size * 6;
@@ -150,26 +148,20 @@ void GameOfLifeCube::cpuCreate(int size) {
     // make 2d grid
     this->board = (int *) calloc(this->row * this->column, sizeof(int));
     this->pboard = (int *) calloc(this->row * this->column, sizeof(int));
-    // RGBA -> 4
+
     this->imgBoard = (GLuint *) calloc(this->row * this->column, sizeof(GLuint));
 
-    // TODO: make a glider
-//    this->board[(1 * column )+ 3] = 255;
-//    this->board[(2 * column )+ 3] = 255;
-//    this->board[(3 * column )+ 3] = 255;
+    //Initialize a pattern in the conway grid
     for (int i = 0; i < column; ++i) {
         this->board[(3 * column )+ i] = 1;
     }
 
-
-    // make image
     genCPUTexImg(false);
 }
 
 void GameOfLifeCube::create() {
     SPDLOG_INFO("Making Game Of Life Cube");
-//    this->worldSize = 1306;
-    this->worldSize = 36;
+    this->worldSize = 1350;
     this->cubeCreate();
     this->cpuCreate(this->worldSize);
     if (!checkCuda()) {
@@ -245,7 +237,9 @@ void GameOfLifeCube::update(GLfloat deltaTime, double time) {
 
 void GameOfLifeCube::ImGUIHeader() {
     if (ImGui::CollapsingHeader("Game Of Life")) {
-        if (ImGui::SliderInt("Size Of World (Not Setup Yet)", &this->worldSize, 6, (GL_MAX_TEXTURE_SIZE/6))) {
+        int max_texture_size;
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+        if (ImGui::SliderInt("Size Of World (Not Setup Yet)", &this->worldSize, 6, (max_texture_size/6))) {
             // TODO: update world size in GPU and CPU
         }
         ImGui::SliderFloat("Speed of Game of Life (sec)",  &this->speed, 0.001f, 15.0f);
@@ -254,6 +248,10 @@ void GameOfLifeCube::ImGUIHeader() {
             ImGui::Checkbox("Use CUDA output instead of CPU output", &this->usingCuda);
         } else {
             ImGui::Text("Cuda not avable");
+        }
+        if (ImGui::Button("Console Print CPU State")) {
+            SPDLOG_INFO(spdlog::fmt_lib::format("State {}", this->qtyCpu));
+            printboard(this->board, this->row, this->column);
         }
         ImGui::Text("CPU        Time %f (ms)", this->cpuTime * 1000);
         ImGui::Text("GPU (CUDA) Time %f (ms)", this->cudaTime * 1000);
@@ -278,54 +276,33 @@ void GameOfLifeCube::cleanUp() {
 }
 
 void GameOfLifeCube::cpuUpdate(double time) {
-    // TODO: CPU code
     runlife(this->board, this->pboard, this->row, this->column);
     // swap boards
     int *tempBoard = this->pboard;
     this->pboard = this->board;
     this->board = tempBoard;
 
-    // static GLubyte checkImage[checkImageHeight][checkImageWidth][4]
-
     for(size_t x = 0; x < this->column; x++) {
-
         for(size_t y = 0; y < this->row; y++) {
             this->imgBoard[x + y * this->column] = UINT32_MAX * (this->board[x + y * this->column] && true);
-
         }
     }
 
-//    for (int z = 0; z < this->column; ++z) {
-//        for (int y = 0; y < this->row; ++y) {
-//            for (int x = 0; x < 4; ++x) {
-//                if (x == 0) { // red
-//                    this->imgBoard[(z * this->row * this->column) + (y * this->column) + x] = this->board[(z * this->column) + y] * INT_MAX;
-//                } else {
-//                    this->imgBoard[(z * this->row * this->column) + (y * this->column) + x] = 0;
-//                }
-//            }
-//        }
-//    }
-
-    // TODO: update image
     genCPUTexImg(true);
-    SPDLOG_INFO(spdlog::fmt_lib::format("State {}", this->qtyCpu));
-    printboard(this->board, this->row, this->column);
-
 }
 
 void GameOfLifeCube::genCPUTexImg(bool freeOldImg) {
-//    if (freeOldImg) {
-//        glDeleteTextures(1, &this->cpuTexID);
-//    }
+    if (freeOldImg) {
+        glDeleteTextures(1, &this->cpuTexID);
+    }
     glGenTextures(1, &this->cpuTexID);
     glBindTexture(GL_TEXTURE_2D, this->cpuTexID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                  this->column, this->row, 0,
                  GL_RGBA,GL_UNSIGNED_INT_8_8_8_8, this->imgBoard);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     glBindTexture(GL_TEXTURE_2D, this->cpuTexID);
 }

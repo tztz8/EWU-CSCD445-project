@@ -152,7 +152,8 @@ void mergetop(int * board, int * nextboard, int row, int col)
            getxlinead(board,col,start,topstart+i)+
            getxlinead(board,col,start,i);
         //printf("%d  \n",topstart+i);
-        deadorAlive(board,nextboard, col,x,wrapBoxRow,i+topstart);
+        // was wrapBoxRow
+        deadorAlive(board,nextboard, col,x,start,i+topstart);
     }
 
     //merge back

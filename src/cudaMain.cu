@@ -120,7 +120,7 @@ __global__ void wrapMain( int *board, int *nextboard, int col, int row, int star
     }
     
 }
-__global__ void merge_top_front( int *board, int *nextboard, int col, int row, int start, int topstart)
+__global__ void merge_top_front( int *board, int *nextboard, int col, int row, int start, int topstart, int wrapBoxRow)
 {
     // global thread(data) row index
     unsigned int i = blockIdx.y * blockDim.y + threadIdx.y;
@@ -129,12 +129,22 @@ __global__ void merge_top_front( int *board, int *nextboard, int col, int row, i
     unsigned int j = blockIdx.x * blockDim.x + threadIdx.x;
 
     int x;
-    x= get_x_lined(board,col,start,topstart+i)+
-       get_x_lined(board,col,start,i)+
-       get_x_lined(board,col,start+1,i);
-    // y = start, x = i
-    nextboard[start*col+i] = deadorAlive(x,board[start*col+i]);
-    
+    if(j < col-1 && j!=0)
+    {
+        x = get_x_lined(board, col, start, topstart + i) +
+            get_x_lined(board, col, start, i) +
+            get_x_lined(board, col, start + 1, i);
+        // y = start, x = i
+        nextboard[start * col + i] = deadorAlive(x, board[start * col + i]);
+
+
+        x = get_x_lined(board, col, start + 1, topstart + i) +
+            get_x_lined(board, col, start, topstart + i) +
+            get_x_lined(board, col, start, i);
+        // was y = wrapBoxRow x = topstart+i
+        nextboard[start * col + (topstart + i)] = deadorAlive(x, board[start * col + (topstart + i)]);
+    }
+
 }
 __global__ void merge_top_back( int *board, int *nextboard, int col, int row, int start, int topstart, int wrapBoxRow, int backstart)
 {
@@ -145,12 +155,50 @@ __global__ void merge_top_back( int *board, int *nextboard, int col, int row, in
     unsigned int j = blockIdx.x * blockDim.x + threadIdx.x;
 
     int x;
-    x= get_x_lined(board,col,wrapBoxRow,topstart+i)+
-       get_x_lined(board,col,start,backstart+i)+
-       get_x_lined(board,col,start+1,backstart+i);
-    // y = start, x = backstart+i
-    nextboard[start*col+(i+backstart)] = deadorAlive(x,board[start*col+(i+backstart)]);
+    if(j < col-1 && j!=0) {
+
+        x = get_x_lined(board, col, wrapBoxRow, topstart + i) +
+            get_x_lined(board, col, start, backstart + i) +
+            get_x_lined(board, col, start + 1, backstart + i);
+        // y = start, x = backstart+i
+        nextboard[start * col + (i + backstart)] = deadorAlive(x, board[start * col + (i + backstart)]);
+
+        x = get_x_lined(board, col, wrapBoxRow - 1, topstart + i) +
+            get_x_lined(board, col, wrapBoxRow, topstart + i) +
+            get_x_lined(board, col, start, backstart + i);
+        //y = start,  x = i+topstart
+        nextboard[start * col + (i + topstart)] = deadorAlive(x, board[start * col + (i + topstart)]);
+    }
 }
+__global__ void merge_top_left( int *board, int *nextboard, int col, int row, int start, int topstart, int wrapBoxRow, int backstart)
+{
+    // global thread(data) row index
+    unsigned int i = blockIdx.y * blockDim.y + threadIdx.y;
+
+    // global thread(data) column index
+    unsigned int j = blockIdx.x * blockDim.x + threadIdx.x;
+
+    int x;
+    
+
+}
+__global__ void merge_top_right( int *board, int *nextboard, int col, int row, int start, int topstart, int wrapBoxRow, int backstart)
+{
+    // global thread(data) row index
+    unsigned int i = blockIdx.y * blockDim.y + threadIdx.y;
+
+    // global thread(data) column index
+    unsigned int j = blockIdx.x * blockDim.x + threadIdx.x;
+
+    int x;
+
+}
+
+
+
+
+
+
 //kept just in case it has usful info
 __global__ void oldk1_from_hmwk( float* g_dataA, float* g_dataB, int floatpitch, int width)
 {

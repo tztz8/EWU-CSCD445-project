@@ -162,7 +162,7 @@ endif
 # clean house
 .PHONY: clean
 clean:
-	rm -rf $(OBJS) $(OUT) $(BUILD_DIR) *.log README.pdf
+	rm -rf $(OBJS) $(OUT) $(BUILD_DIR) *.log logs README.pdf
 
 # run the program
 .PHONY: run
