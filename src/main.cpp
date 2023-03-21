@@ -1309,6 +1309,20 @@ std::string gamepad(bool logGamePadButtons, GLfloat deltaTime) {
 //                                                 change, modelOneScaleValue));
         }
 
+        if (logGamePadButtons) {
+            SPDLOG_INFO(" - Y button to show help image");
+            returnString.append(" - Y button to show help image\n");
+        }
+        static bool wasPress = false;
+        if(buttons[GLFW_GAMEPAD_BUTTON_Y]) {
+            if (!wasPress) {
+                gameOfLife->useHelpImg = !gameOfLife->useHelpImg;
+            }
+            wasPress = true;
+        } else {
+            wasPress = false;
+        }
+
     }
     return returnString;
 }

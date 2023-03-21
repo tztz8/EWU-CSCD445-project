@@ -49,9 +49,13 @@ At min, a cube with each face running Conway games of life on CUDA that has the 
 
 ### How to run/use
 
-BLANK
-
 Need the [project](project) executable and [res](res) folder to run
+
+> Take no arguments
+
+The program will log to console and log files in [logs](logs) folder using spdlog
+
+A [imgui state](imgui.ini) file will also be made to remember somethings about GUI last state (Ex where within the window GUI is at)
 
 ### Sample run
 

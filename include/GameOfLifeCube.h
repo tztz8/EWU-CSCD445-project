@@ -28,6 +28,8 @@ private:
     GLuint cpuTexID;
     void genCPUTexImg(bool freeOldImg);
 
+    GLuint helpTexID;
+
     void cubeCreate();
     void cpuCreate(int size);
     cudaEvent_t launch_begin, launch_end;
@@ -47,6 +49,7 @@ private:
     int *pboard;
     GLuint *imgBoard;
 public:
+    bool useHelpImg;
     void create();
     void ImGUIHeader();
     void draw();
@@ -54,5 +57,6 @@ public:
     void cleanUp();
 };
 
-
+extern int DEBUG_GLOBAL_ROWS;
+extern int DEBUG_GLOBAL_COLS;
 #endif //EWU_CSCD445_PROJECT_GAMEOFLIFECUBE_H

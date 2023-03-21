@@ -7,6 +7,9 @@
 #include "OpenGLHelperMethods.h"
 #include "GameOfLifeLogic.h"
 
+int DEBUG_GLOBAL_ROWS;
+int DEBUG_GLOBAL_COLS;
+
 void GameOfLifeCube::cubeCreate() {
     SPDLOG_INFO("Initialize GameOfLife Cube");
     float side = 0.5f;
@@ -82,35 +85,35 @@ void GameOfLifeCube::cubeCreate() {
 //                                1.0f, 1.0f,   // 0 1
 //                                1.0, 0.0f,   // 0 1/6
 //                                0.0f, 0.0f,
-                                0.0f, 1.0f,  // v0,v1,v2,v3 (front)
-                                1.0f/6.0f, 1.0f,   // 0 1
-                                1.0f/6.0f, 0.0f,   // 0 1/6
-                                0.0f, 0.0f,
+            0.0f, 1.0f,  // v0,v1,v2,v3 (front)
+            1.0f / 6.0f, 1.0f,   // 0 1
+            1.0f / 6.0f, 0.0f,   // 0 1/6
+            0.0f, 0.0f,
 
-                                4.0f/6.0f, 1.0f, // v1,v6,v7,v2 (left)
-                                4.0f/6.0f, 0.0f,
-                                3.0f/6.0f, 0.0f,
-                                3.0f/6.0f, 1.0f,
+            4.0f / 6.0f, 1.0f, // v1,v6,v7,v2 (left)
+            4.0f / 6.0f, 0.0f,
+            3.0f / 6.0f, 0.0f,
+            3.0f / 6.0f, 1.0f,
 
-                                1.0f, 1.0f, // v7,v4,v3,v2 (bottom)
-                                1.0f, 0.0f,
-                                5.0f/6.0f, 0.0f,
-                                5.0f/6.0f, 1.0f,
+            1.0f, 1.0f, // v7,v4,v3,v2 (bottom)
+            1.0f, 0.0f,
+            5.0f / 6.0f, 0.0f,
+            5.0f / 6.0f, 1.0f,
 
-                                1.0f/6.0f, 1.0f,
-                                2.0f/6.0f, 1.0f, // v0,v3,v4,v5 (right)
-                                2.0f/6.0f, 0.0f,
-                                1.0f/6.0f, 0.0f,
+            1.0f / 6.0f, 1.0f,
+            2.0f / 6.0f, 1.0f, // v0,v3,v4,v5 (right)
+            2.0f / 6.0f, 0.0f,
+            1.0f / 6.0f, 0.0f,
 
-                                5.0f/6.0f, 0.0f,
-                                4.0f/6.0f, 0.0f,
-                                4.0f/6.0f, 1.0f,
-                                5.0f/6.0f, 1.0f, // v0,v5,v6,v1 (top)
+            5.0f / 6.0f, 0.0f,
+            4.0f / 6.0f, 0.0f,
+            4.0f / 6.0f, 1.0f,
+            5.0f / 6.0f, 1.0f, // v0,v5,v6,v1 (top)
 
-                                3.0f/6.0f, 0.0f, // v4,v7,v6,v5 (back)
-                                2.0f/6.0f, 0.0f,
-                                2.0f/6.0f, 1.0f,
-                                3.0f/6.0f, 1.0f };
+            3.0f / 6.0f, 0.0f, // v4,v7,v6,v5 (back)
+            2.0f / 6.0f, 0.0f,
+            2.0f / 6.0f, 1.0f,
+            3.0f / 6.0f, 1.0f};
 
     glGenVertexArrays(1, &this->cube_vao);
     glBindVertexArray(this->cube_vao);
@@ -130,7 +133,7 @@ void GameOfLifeCube::cubeCreate() {
 
     glBindBuffer(GL_ARRAY_BUFFER, handle[2]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cube_textures), cube_textures, GL_STATIC_DRAW);
-    glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glVertexAttribPointer((GLuint) 2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(2);  // Vertex texture
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle[3]);
@@ -145,6 +148,9 @@ void GameOfLifeCube::cpuCreate(int size) {
     this->row = size;
     this->column = size * 6;
 
+    DEBUG_GLOBAL_ROWS = this->row;
+    DEBUG_GLOBAL_COLS = this->column;
+
     // make 2d grid
     this->board = (int *) calloc(this->row * this->column, sizeof(int));
     this->pboard = (int *) calloc(this->row * this->column, sizeof(int));
@@ -152,8 +158,11 @@ void GameOfLifeCube::cpuCreate(int size) {
     this->imgBoard = (GLuint *) calloc(this->row * this->column, sizeof(GLuint));
 
     //Initialize a pattern in the conway grid
+//    for (int i = 0; i < (4*(this->column/6)); ++i) {
+//        this->board[(3 * column )+ i] = 1;
+//    }
     for (int i = 0; i < column; ++i) {
-        this->board[(3 * column )+ i] = 1;
+        this->board[(3 * column) + i] = 1;
     }
 
     genCPUTexImg(false);
@@ -161,7 +170,8 @@ void GameOfLifeCube::cpuCreate(int size) {
 
 void GameOfLifeCube::create() {
     SPDLOG_INFO("Making Game Of Life Cube");
-    this->worldSize = 1350;
+    this->worldSize = 64;// 1350
+    this->worldSize -= this->worldSize % 6;
     this->cubeCreate();
     this->cpuCreate(this->worldSize);
     if (!checkCuda()) {
@@ -181,10 +191,15 @@ void GameOfLifeCube::create() {
     this->run = true;
     this->speed = 5.0f;
     this->timeStart = 0;
+    this->useHelpImg = false;
+    this->helpTexID = loadTexture("res/textures/Test/testImage.png");
 }
 
 void GameOfLifeCube::draw() {
-    if (usingCuda) {
+    if (useHelpImg) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, helpTexID);
+    } else if (usingCuda) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cudaTexID);
     } else {
@@ -205,10 +220,10 @@ double currentTime() {
 
 void GameOfLifeCube::update(GLfloat deltaTime, double time) {
     if (this->run) {
-        if (time- this->timeStart > speed) {
+        if (time - this->timeStart > speed) {
             this->timeStart = time;
 
-            if (this->havaCuda) {
+            if (this->usingCuda && this->havaCuda) {
 //                cudaEventRecord(launch_begin, 0);
                 double now, then;
                 now = currentTime();
@@ -222,15 +237,15 @@ void GameOfLifeCube::update(GLfloat deltaTime, double time) {
                 this->qtyCuda++;
 //                this->cudaAvgTime += (this->cudaTime - this->cudaAvgTime) / static_cast<double>(qtyCuda);
                 this->cudaAvgTime += ((then - now) - this->cudaAvgTime) / static_cast<double>(qtyCuda);
+            } else {
+                double now, then;
+                now = currentTime();
+                this->cpuUpdate(time);
+                then = currentTime();
+                this->cpuTime = static_cast<float>(then - now);
+                this->qtyCpu++;
+                this->cpuAvgTime += ((then - now) - this->cpuAvgTime) / static_cast<double>(qtyCpu);
             }
-
-            double now, then;
-            now = currentTime();
-            this->cpuUpdate(time);
-            then = currentTime();
-            this->cpuTime = static_cast<float>(then - now);
-            this->qtyCpu++;
-            this->cpuAvgTime += ((then - now) - this->cpuAvgTime) / static_cast<double>(qtyCpu);
         }
     }
 }
@@ -239,12 +254,17 @@ void GameOfLifeCube::ImGUIHeader() {
     if (ImGui::CollapsingHeader("Game Of Life")) {
         int max_texture_size;
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-        if (ImGui::SliderInt("Size Of World (Not Setup Yet)", &this->worldSize, 6, (max_texture_size/6))) {
+        if (ImGui::SliderInt("Size Of World (Not Setup Yet)", &this->worldSize, 6, (max_texture_size / 6))) {
+            this->worldSize -= this->worldSize % 6;
             // TODO: update world size in GPU and CPU
         }
-        ImGui::SliderFloat("Speed of Game of Life (sec)",  &this->speed, 0.001f, 15.0f);
+        ImGui::SliderFloat("Speed of Game of Life (sec)", &this->speed, 0.001f, 15.0f);
         ImGui::Checkbox("Run game of life", &this->run);
+        ImGui::Checkbox("Use help image (f, l, r, b, t, b)", &this->useHelpImg);
         if (this->havaCuda) {
+            if (this->useHelpImg) {
+                ImGui::Text("Warring, Using Help Image");
+            }
             ImGui::Checkbox("Use CUDA output instead of CPU output", &this->usingCuda);
         } else {
             ImGui::Text("Cuda not avable");
@@ -258,7 +278,8 @@ void GameOfLifeCube::ImGUIHeader() {
         ImGui::Text("The speedup(SerialTimeCost / CudaTimeCost) when using GPU is %lf", this->cpuTime / this->cudaTime);
         ImGui::Text("CPU        Avg Time %f (ms)", this->cpuAvgTime * 1000);
         ImGui::Text("GPU (CUDA) Avg Time %f (ms)", this->cudaAvgTime * 1000);
-        ImGui::Text("The avg speedup(SerialTimeCost / CudaTimeCost) when using GPU is %lf", this->cpuAvgTime / this->cudaAvgTime);
+        ImGui::Text("The avg speedup(SerialTimeCost / CudaTimeCost) when using GPU is %lf",
+                    this->cpuAvgTime / this->cudaAvgTime);
         ImGui::Text("CPU State: %ld", this->qtyCpu);
         ImGui::Text("GPU State: %ld", this->qtyCuda);
     }
@@ -282,8 +303,8 @@ void GameOfLifeCube::cpuUpdate(double time) {
     this->pboard = this->board;
     this->board = tempBoard;
 
-    for(size_t x = 0; x < this->column; x++) {
-        for(size_t y = 0; y < this->row; y++) {
+    for (size_t x = 0; x < this->column; x++) {
+        for (size_t y = 0; y < this->row; y++) {
             this->imgBoard[x + y * this->column] = UINT32_MAX * (this->board[x + y * this->column] && true);
         }
     }
@@ -299,7 +320,7 @@ void GameOfLifeCube::genCPUTexImg(bool freeOldImg) {
     glBindTexture(GL_TEXTURE_2D, this->cpuTexID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                  this->column, this->row, 0,
-                 GL_RGBA,GL_UNSIGNED_INT_8_8_8_8, this->imgBoard);
+                 GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, this->imgBoard);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

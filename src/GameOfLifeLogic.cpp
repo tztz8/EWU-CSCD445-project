@@ -3,6 +3,7 @@
 
 #include <string>
 #include "GameOfLifeLogic.h"
+#include "GameOfLifeCube.h"
 
 #define start 0
 //int wrapBoxRow = row - 1;
@@ -34,8 +35,11 @@
 //int leftend = 4*(column/6)-1;
 #define leftend (4*(col/6)-1)
 
-int  getxlinead(int * board, int col,int y,int x)
-{
+int  getxlinead(int * board, int col, int y, int x) {
+    if(x >= DEBUG_GLOBAL_COLS || y >= DEBUG_GLOBAL_ROWS) {
+        SPDLOG_ERROR(spdlog::fmt_lib::format("OUT OF BOUNDS: x = {}, y = {}", x, y));
+        return 0;
+    }
     return   board[(y * col) + x-1]+
              board[(y * col) + x]+
              board[(y * col) + x+1];
@@ -62,11 +66,11 @@ void printboard(int * board, int row, int col){
     }
 }
 
-int addUpLife(int * board,int col, int i, int j)
+int addUpLife(int * board,int col, int j, int i)
 {
-    return  getxlinead(board, col, i+1,j)+
-            getxlinead(board, col, i,j)+
-            getxlinead(board, col, i-1,j);
+    return  getxlinead(board, col, j+1,i)+
+            getxlinead(board, col, j,i)+
+            getxlinead(board, col, j-1,i);
 }
 void deadorAlive(int * board,int * nextboard, int col, int value, int y, int x)
 {
@@ -222,7 +226,7 @@ void mergebot(int * board, int * nextboard,int row, int col)
     }
     ///possible problem here
     for (int i = start+1; i < frontend; ++i) {
-        x=      getxlinead(board,col,wrapBoxRow+1,botstart+i)+
+        x=      getxlinead(board,col,wrapBoxRow-1,botstart+i)+
                 getxlinead(board,col,wrapBoxRow,botstart+i)+
                 getxlinead(board,col,wrapBoxRow,backstart+i);
 
@@ -566,7 +570,8 @@ void mergecorners(int * board,int * nextboard,int row, int col)
             board[start*col+botstart]+
             board[start*col+botstart+1]+
 
-            board[((wrapBoxRow+1) * col) + leftstart]+
+            //was wrapBoxRow+1
+            board[((wrapBoxRow) * col) + leftstart]+
             board[(start+1)*col+botstart]+
             board[(start+1)*col+botstart+1];
 
@@ -629,10 +634,10 @@ void runlife(int * board, int * nextboard, int inbound_row, int inbound_col)
     int x = 0;
     //body
     for (int i = start; i < row ; ++i) {
-        for (int j = start; j < wrapBoxColumn ; ++j) {
+        for (int j = start; j < wrapBoxColumn-1 ; ++j) {
             if(i==0){
                 mergetop(board,nextboard, row, column);
-                x = addUpLife(board, i, j,column);
+               // x = addUpLife(board, i, j,column);
             }
             else if(i==row-1)
             {
