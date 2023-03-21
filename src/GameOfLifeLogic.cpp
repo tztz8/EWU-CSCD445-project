@@ -71,7 +71,7 @@ int addUpLife(int * board,int col, int i, int j)
 void deadorAlive(int * board,int * nextboard, int col, int value, int y, int x)
 {
 
-
+    //y == j , x == start
     if(board[y*col+x]==1)
     {
         if(value-1==2||value-1==3)

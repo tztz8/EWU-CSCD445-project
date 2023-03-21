@@ -751,7 +751,7 @@ void APIENTRY glDebugOutput(GLenum source,
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
         std::string s(message);
         s.erase(s.find_last_not_of(" \n\r\t")+1);
-        SPDLOG_INFO(spdlog::fmt_lib::format("OpenGL Debug: "
+        SPDLOG_INFO(spdlog::fmt_lib::format("OpenGL Debug (Notification): "
                                             "{}, {}, {}, "
                                             "Debug message (ID:{:0d}): {}",
                                             sourceMessage,
@@ -761,14 +761,14 @@ void APIENTRY glDebugOutput(GLenum source,
     } else if (severity == GL_DEBUG_SEVERITY_HIGH || severity == GL_DEBUG_SEVERITY_MEDIUM) {
         std::string s(message);
         s.erase(s.find_last_not_of(" \n\r\t")+1);
-        SPDLOG_ERROR(spdlog::fmt_lib::format("OpenGL Debug: message (ID:{:0d}): {}", id, s));
-        SPDLOG_ERROR(spdlog::fmt_lib::format("OpenGL Debug: {}", sourceMessage));
-        SPDLOG_ERROR(spdlog::fmt_lib::format("OpenGL Debug: {}", typeMessage));
-        SPDLOG_ERROR(spdlog::fmt_lib::format("OpenGL Debug: {}", severityMessage));
+        SPDLOG_ERROR(spdlog::fmt_lib::format("OpenGL Debug ({}): message (ID:{:0d}): {}", "", id, s));
+        SPDLOG_ERROR(spdlog::fmt_lib::format("OpenGL Debug ({}): {}", "", sourceMessage));
+        SPDLOG_ERROR(spdlog::fmt_lib::format("OpenGL Debug ({}): {}", "", typeMessage));
+        SPDLOG_ERROR(spdlog::fmt_lib::format("OpenGL Debug ({}): {}", "", severityMessage));
     } else {
         std::string s(message);
         s.erase(s.find_last_not_of(" \n\r\t")+1);
-        SPDLOG_DEBUG(spdlog::fmt_lib::format("OpenGL Debug: "
+        SPDLOG_DEBUG(spdlog::fmt_lib::format("OpenGL Debug (Debug): "
                                              "{}, {}, {}, "
                                              "Debug message (ID:{:0d}): {}",
                                              sourceMessage,

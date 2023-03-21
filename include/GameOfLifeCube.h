@@ -45,7 +45,7 @@ private:
     int column;
     int *board;
     int *pboard;
-    int *imgBoard;
+    GLuint *imgBoard;
 public:
     void create();
     void ImGUIHeader();

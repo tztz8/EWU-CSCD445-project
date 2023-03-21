@@ -77,14 +77,15 @@ void GameOfLifeCube::cubeCreate() {
             0.0f, 0.0f, -1.0f
     };
 
-    GLfloat cube_textures[] = { 0.0f, 1.0f,  // v0,v1,v2,v3 (front)
-                                1.0f, 1.0f,   // 0 1
-                                1.0, 0.0f,   // 0 1/6
-                                0.0f, 0.0f,
-//                                0.0f, 1.0f,  // v0,v1,v2,v3 (front)
-//                                1.0f/6.0f, 1.0f,   // 0 1
-//                                1.0f/6.0f, 0.0f,   // 0 1/6
+    GLfloat cube_textures[] = {
+//                                    0.0f, 1.0f,  // v0,v1,v2,v3 (front)
+//                                1.0f, 1.0f,   // 0 1
+//                                1.0, 0.0f,   // 0 1/6
 //                                0.0f, 0.0f,
+                                0.0f, 1.0f,  // v0,v1,v2,v3 (front)
+                                1.0f/6.0f, 1.0f,   // 0 1
+                                1.0f/6.0f, 0.0f,   // 0 1/6
+                                0.0f, 0.0f,
 
                                 4.0f/6.0f, 1.0f, // v1,v6,v7,v2 (left)
                                 4.0f/6.0f, 0.0f,
@@ -149,7 +150,8 @@ void GameOfLifeCube::cpuCreate(int size) {
     // make 2d grid
     this->board = (int *) calloc(this->row * this->column, sizeof(int));
     this->pboard = (int *) calloc(this->row * this->column, sizeof(int));
-    this->imgBoard = (int *) calloc(this->row * this->column, sizeof(int));
+    // RGBA -> 4
+    this->imgBoard = (GLuint *) calloc(this->row * this->column, sizeof(GLuint));
 
     // TODO: make a glider
 //    this->board[(1 * column )+ 3] = 255;
@@ -167,7 +169,7 @@ void GameOfLifeCube::cpuCreate(int size) {
 void GameOfLifeCube::create() {
     SPDLOG_INFO("Making Game Of Life Cube");
 //    this->worldSize = 1306;
-    this->worldSize = 6;
+    this->worldSize = 36;
     this->cubeCreate();
     this->cpuCreate(this->worldSize);
     if (!checkCuda()) {
@@ -283,11 +285,27 @@ void GameOfLifeCube::cpuUpdate(double time) {
     this->pboard = this->board;
     this->board = tempBoard;
 
-    for (int i = 0; i < this->row; ++i) {
-        for (int j = 0; j < this->column; ++j) {
-            this->imgBoard[(i * this->row) + j] = this->board[(i * this->row) + j] * INT_MAX;
+    // static GLubyte checkImage[checkImageHeight][checkImageWidth][4]
+
+    for(size_t x = 0; x < this->column; x++) {
+
+        for(size_t y = 0; y < this->row; y++) {
+            this->imgBoard[x + y * this->column] = UINT32_MAX * (this->board[x + y * this->column] && true);
+
         }
     }
+
+//    for (int z = 0; z < this->column; ++z) {
+//        for (int y = 0; y < this->row; ++y) {
+//            for (int x = 0; x < 4; ++x) {
+//                if (x == 0) { // red
+//                    this->imgBoard[(z * this->row * this->column) + (y * this->column) + x] = this->board[(z * this->column) + y] * INT_MAX;
+//                } else {
+//                    this->imgBoard[(z * this->row * this->column) + (y * this->column) + x] = 0;
+//                }
+//            }
+//        }
+//    }
 
     // TODO: update image
     genCPUTexImg(true);
@@ -297,14 +315,14 @@ void GameOfLifeCube::cpuUpdate(double time) {
 }
 
 void GameOfLifeCube::genCPUTexImg(bool freeOldImg) {
-    if (freeOldImg) {
-        glDeleteTextures(1, &this->cpuTexID);
-    }
+//    if (freeOldImg) {
+//        glDeleteTextures(1, &this->cpuTexID);
+//    }
     glGenTextures(1, &this->cpuTexID);
     glBindTexture(GL_TEXTURE_2D, this->cpuTexID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                  this->column, this->row, 0,
-                 GL_RED,GL_INT, this->imgBoard);
+                 GL_RGBA,GL_UNSIGNED_INT_8_8_8_8, this->imgBoard);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
