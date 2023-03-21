@@ -170,7 +170,7 @@ void GameOfLifeCube::cpuCreate(int size) {
 
 void GameOfLifeCube::create() {
     SPDLOG_INFO("Making Game Of Life Cube");
-    this->worldSize = 64;// 1350
+    this->worldSize = 125;// 1350
     this->worldSize -= this->worldSize % 6;
     this->cubeCreate();
     this->cpuCreate(this->worldSize);

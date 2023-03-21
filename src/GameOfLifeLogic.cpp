@@ -414,7 +414,8 @@ void mergecorners(int * board,int * nextboard,int row, int col)
 
     deadorAlive(board,nextboard,col,x,start,frontend);
 
-    // right corner front
+    // the next set is the right top corners
+    // front with right and top
     x =     board[start*col+topend]+
             board[start*col+topend-1]+
 

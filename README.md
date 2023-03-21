@@ -34,12 +34,8 @@ Each face of a cube will have a 2d grid of Conway games of life and their edges 
 ## Functions
 
 1.  OpenGL Cube
-    1.  If we have time also have input that can effect Conway games of life as it runs
-2.  CPU Conway games of life
-    1.  If we have time
-3.  CUDA Conway, games of life
-    1.  But include edges interacting
-4.  Convert each 2d grid of Conway games of life to image for the face on the cube
+2.  CPU Conway games of life but for cube surface
+3.  CUDA Conway, games of life but for cube surface
 
 ## Min Goal
 
@@ -49,13 +45,108 @@ At min, a cube with each face running Conway games of life on CUDA that has the 
 
 ### How to run/use
 
-Need the [project](project) executable and [res](res) folder to run
+#### Start
+
+Need the [project](project) executable (TODO: is dll’s needed?) and [res](res) folder to run
 
 > Take no arguments
 
 The program will log to console and log files in [logs](logs) folder using spdlog
 
 A [imgui state](imgui.ini) file will also be made to remember somethings about GUI last state (Ex where within the window GUI is at)
+
+Recommend using a game pad (Microsoft Xbox Series S\|X Controller) to look that the game of life cube
+
+![Ruing after a bit](doc/Screenshot_from_2023-03-21_13-26-27.png)
+
+![The console of the Ruing after a bit imgage](doc/console_of_it.png)
+
+#### Using GUI
+
+Using ImGUI give you menus to control the program from.
+
+##### Camera
+
+![Camera GUI Menu](doc/cameragui.png)
+
+Gives control over the camera.
+
+-   Check box `Stop Rotate Camera` Auto rotate the camera (`camera rotate angle value`)
+-   Check box `Top view camera` when in default values move the camera to look from the top
+-   Slider `camera rotate angle value` rotate the camera around the `Eye Center` + `Eye Hight` at the `Eye Radias`
+-   Slider `Field of view` the “extent of the observable world seen at any given moment”
+-   Slider `Eye Hight` the hight of the eye above the `Eye Center`
+-   Slider `Eye Radias` the diastase the camera is from `Eye Center`
+-   Drag `Eye Center` where the camera looking at
+
+##### Light Settings
+
+![Light GUI Menu](doc/lightgui.png)
+
+No need to use from the project (Leave at defaults)
+
+##### Window Settings
+
+![Window GUI Menu](doc/windowgui.png)
+
+Gives control and info over the window
+
+-   Show info about the window and displays
+-   Check box `vsync (frame limit)` let you trune on and off the frame limit to the frame rate of your display.
+-   Check box `Full Screen` set the screen full screen
+-   Color Edit `clear color` set the background color
+
+##### ImGui Settings
+
+![ImGui GUI Menu](doc/imguigui.png)
+
+No need to use from the project (Leave at defaults)
+
+##### Graphics
+
+![Graphics GUI Menu](doc/graphicsgui.png)
+
+Gives control over the graphics settings
+
+-   Check box `Show lines` No need to use from the project (Leave at defaults)
+
+-   Check box `CL_CULL_FACE` No need to use from the project (Leave at defaults)
+
+    -   Check box `CL_CULL_FACE back` No need to use from the project (Leave at defaults)
+
+-   Check box `Scale is all the same value` Has the `Model Scale` be the same value for all axis
+
+-   Drag `Model Scale` scale of the model
+
+    -   Drag 3 `Model Scale` scale of the model x, y, z ![Drag 3 of model scale in graphics settings](doc/Screenshot%20from%202023-03-21%2014-36-54.png)
+
+        > Note: when change the scale using game pad will have all (x, y, z) be the same value
+
+-   Slider `Model rotate angle` the angle the model is rotated about (`Model rotate vector`)
+
+-   Slider 3 `Model rotate vector` the vector used when rotating the model
+
+-   Combo `Model` No need to use from the project (Leave at defaults of `GameOfLifeCube`)
+
+-   Slider `Sphere Steps` No need to use from the project (Leave at defaults) (used for the sphere model)
+
+-   Button `Reload Shaders` No need to use from the project (Leave at defaults)
+
+##### Game Pad
+
+![Game Pad GUI Menu](doc/Screenshot%20from%202023-03-21%2013-47-56.png)
+
+Give info about use the game pad and how to use it
+
+> Note: only test with Xbox Series Controller over usb c cable on Linux
+
+##### Game Of Life
+
+> TODO: replace with update GUI screen shot
+
+![Game Of Life GUI Menu](doc/Screenshot%20from%202023-03-21%2013-49-51.png)
+
+BLANK
 
 ### Sample run
 
@@ -100,5 +191,3 @@ May Need `gcc`
 ## Notes
 
 -   [OpenGL Code base off](https://github.com/tztz8/OpenGL-All)
--   [Graphics Interoperability](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__INTEROP.html)
--   [OpenGL Interoperability](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__OPENGL.html)
