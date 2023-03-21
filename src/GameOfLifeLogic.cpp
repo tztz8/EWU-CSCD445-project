@@ -449,12 +449,12 @@ void mergecorners(int * board,int * nextboard,int row, int col)
 
     // left bot corners with no warps main
     // right corner front
-    x =     board[wrapBoxRow*col+botend]+
-            board[wrapBoxRow*col+botend-1]+
-            getxlinead(board, col,wrapBoxRow,frontend)+
-            getxlinead(board, col,wrapBoxRow-1,frontend);
+    x =     board[start*col+botend]+
+            board[start*col+botend-1]+
+            getxlinead(board, col,wrapBoxRow,rightstart)+
+            getxlinead(board, col,wrapBoxRow-1,rightstart);
 
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,frontend);
+    deadorAlive(board,nextboard,col,x,wrapBoxRow,rightstart);
 
     // right corner right
     x =     board[(start * col) + botend]+

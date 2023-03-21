@@ -188,33 +188,84 @@ __host__ void cornerHost(int* board, int * nextboard,int y, int x)
 
     // the next set handles the left bots corners
     // right with front and bot
-    value = board[y*x+(x - 1)]+
-            board[y*x+(x - 1)-1]+
+    value = board[0*x+(x - 1)]+
+            board[0*x+(x - 1)-1]+
 
-    cpu_get_x_lined(board,x,y,(x/6-1))+
-    cpu_get_x_lined(board,x,y-1,(x/6-1));
+    cpu_get_x_lined(board,x,y,(x/6))+
+    cpu_get_x_lined(board,x,y-1,(x/6));
 
     nextboard[y*x+(x/6-1)]= cpuDeadorAlive(value,
                                                board[y*x+(x/6-1)]);
 
     // back with right and bot
-    value = board[(0 * y) + (x - 1)]+
-            board[((0+1) * y) + (x - 1)]+
+    value = board[(y*x) + (x - 1)]+
+            board[((y-1)*x) + (x - 1)]+
 
-    cpu_get_x_lined(board,x,y,(2*(x/6)-1))+
-    cpu_get_x_lined(board,x,y-1,(2*(x/6)-1));
+    cpu_get_x_lined(board,x,y,(2*(x/6)))+
+    cpu_get_x_lined(board,x,y-1,(2*(x/6)));
 
     nextboard[y*x+(2*(x/6)-1)]= cpuDeadorAlive(value,
                                            board[y*x+(2*(x/6)-1)]);
-    // back with left and bot
-    value =     board[0*x+((x/6)*5)]+
-            board[0*x+((x/6)*5)+1]+
+    // left with back and bot
+    value =     board[y*x+((x/6)*5)]+
+            board[(y-1)*x+((x/6)*5)+1]+
 
-    cpu_get_x_lined(board,x,y,(3*(x/6)-1))+
-    cpu_get_x_lined(board,x,y-1,(3*(x/6)-1));
+    cpu_get_x_lined(board,x,y,(3*(x/6)))+
+    cpu_get_x_lined(board,x,y-1,(3*(x/6)));
 
-    nextboard[y*x+(3*(x/6)-1)]= cpuDeadorAlive(value,
-                                               board[y*x+(3*(x/6)-1)]);
+    nextboard[y*x+(3*(x/6))]= cpuDeadorAlive(value,
+                                               board[y*x+(3*(x/6))]);
+
+    // bot right corners of main
+    // front with right and bot
+
+    value = board[0*x+(5*(x/6))]+
+    board[(0+1)*x+(5*(x/6))]+
+
+    cpu_get_x_lined(board,x,y,(x/6))+
+    cpu_get_x_lined(board,x,y-1,(x/6));
+
+    nextboard[y*x+(x/6)]= cpuDeadorAlive(value,
+                                             board[y*x+(x/6)]);
+
+    // right corner back
+    value =     board[y*x+(x - 1)]+
+            board[(y)*x+(x - 1)-1]+
+
+            getxlinead(board, col,wrapBoxRow,backstart)+
+            getxlinead(board, col,wrapBoxRow-1,backstart);
+    deadorAlive(board,nextboard,col,x,wrapBoxRow,backstart);
+
+    cpu_get_x_lined(board,x,y,(x/6))+
+    cpu_get_x_lined(board,x,y-1,(x/6));
+
+    nextboard[y*x+(x/6)]= cpuDeadorAlive(value,
+                                         board[y*x+(x/6)]);
+    /*
+     *
+    x =
+
+    //printboard(nextboard);
+
+    // bot left corners of main
+    // left corner back
+    x =     board[start*col+botend]+
+            board[start*col+botend-1]+
+            getxlinead(board, col,wrapBoxRow,backstart)+
+            getxlinead(board, col,wrapBoxRow-1,backstart);
+    deadorAlive(board,nextboard,col,x,wrapBoxRow,backstart);
+
+    //printboard(nextboard);
+    // bot left corners of main
+    // left corner left
+    x =     board[start*col+botstart]+
+            board[(start+1)*col+botstart]+
+            getxlinead(board, col,wrapBoxRow,leftstart)+
+            getxlinead(board, col,wrapBoxRow-1,backstart);
+    deadorAlive(board,nextboard,col,x,wrapBoxRow,leftstart);
+
+     */
+
 }
 
 __device__ int get_x_lined(int * board, int col,int x,int y)
@@ -273,7 +324,7 @@ __global__ void two_d_conway_block(int *board, int *next_board, int cols, int x_
     }
 }
 
-    __global__ void conway_edges(int *self, int *self_next, int *other, int self_idx_step, int other_idx_step, int adjacent_offset, int len) {
+__global__ void conway_edges(int *self, int *self_next, int *other, int self_idx_step, int other_idx_step, int adjacent_offset, int len) {
     //Determine the index
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if(idx>=len) return;
@@ -297,17 +348,17 @@ void launchit () {
     const int edge_length = size - 2;
     const dim3 numBlocks(edge_length/blocksize + (1&&(edge_length%blocksize)), 1, 1);
 
-    conway_edges(int *self, int *self_next, int *other, int self_idx_step, int other_idx_step, int adjacent_offset, int len)
+    conway_edges(int *self, int *self_next, int *other, int self_idx_step, int other_idx_step, int adjacent_offset, int len);
 
     conway_edges(board + cols, next_board + cols, board + size*4 - 1 + cols, cols, cols, 1, edge_length); // body wrap
     conway_edges(board + size*4 - 1 + cols, next_board + size*4 - 1 + cols, board + cols, cols, cols, -1, edge_length);
 
-    conway_edges <<<numBlocks, blocksize>>>(board + 1, next_board + 1, board + (4 * size), 1, 1, cols, edge_length); //top front
-    conway_edges <<<numBlocks, blocksize>>>(board + 1 + size*2, next_board + 1 + size*2, board + 5*size - 1 + cols*(rows-1), 1, -1, cols, edge_length); //top back
+    conway_edges <<<numBlocks, blocksize>>>(board + 1, next_board + 1, board + (4 * size)+1, 1, 1, cols, edge_length); //top front
+    conway_edges <<<numBlocks, blocksize>>>(board + 1 + size*2, next_board + 1 + size*2, board + 5*size - 2 + cols*(rows-1), 1, -1, cols, edge_length); //top back
     conway_edges <<<numBlocks, blocksize>>>(board + 1 + size, next_board + 1 + size, board + 5*size - 1 + cols, 1, cols, cols, edge_length); //top right
     conway_edges <<<numBlocks, blocksize>>>(board + 1 + size*3, next_board + 1 + size*3, board + 4*size + cols*(rows-2), 1, (-cols), cols, edge_length); //top left
 
-    conway_edges <<<numBlocks, blocksize>>>(board+cols*(rows-1)+1, next_board+cols*(rows-1)+1, board + size*5 + 1, 1, 1, (-cols), edge_length);
+    conway_edges <<<numBlocks, blocksize>>>(board+cols*(rows-1)+1, next_board+cols*(rows-1)+1, board + size*5 + 1, 1, 1, (-cols), edge_length); // bottom front
 
 }
 // Called when setting things up before graphs loop
@@ -326,7 +377,7 @@ __host__ void cudaMainInitialize(int size) {
     cudaMemset(d_board,0,sizeof(int)*size);
 
     cudaMemcpy(d_board,h_board, sizeof(int)*size, cudaMemcpyHostToDevice);
-    
+
 }
 
 // Called for every frame

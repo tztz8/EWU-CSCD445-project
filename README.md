@@ -146,7 +146,23 @@ Give info about use the game pad and how to use it
 
 ![Game Of Life GUI Menu](doc/Screenshot%20from%202023-03-21%2013-49-51.png)
 
-BLANK
+Gives control and info over the Game Of Life
+
+- TODO: add about reset
+- Slider `Speed of Game of Life (sec)` how much time need to pass before next state of current game of life (run update)
+- Check box `Run game of life` if the game of life is ruining or not (Use to stop the game of life and look at it without changing)
+- Check box `Use help image (f, l, r, b, t, b)` to use the help image to know what face we are looking at
+- Check box `Use CUDA instead of CPU` to use CUDA or CPU code
+  - Text `Warring, Using Help Image` when using the help image
+  - Text `Cuda not available` when no Nvidia CUDA device found 
+- Button `Console Print CPU State` to print all 6 sides of Game Of Life from CPU to console and log files
+- TODO: world info
+- Time info
+  - Time need to run last update 
+  - The speed up of the last update in cpu and gpu
+  - Continuous average of time need to run update
+  - The speed up of the Continuous average time in cpu and gpu
+  - What state each are at (number of time update is called)
 
 ### Sample run
 
@@ -187,6 +203,15 @@ Need `nvcc`
 Wants `clang`
 
 May Need `gcc`
+
+#### Fedora install comands
+
+```sh
+sudo dnf install libXi libXi-devel
+sudo dnf install glew glew-devel libGLEW
+sudo dnf install clang clang-devel clang-libs clang-tools-extra
+sudo dnf install glew glew-devel glfw glfw-devel glm-devel
+```
 
 ## Notes
 

@@ -252,12 +252,14 @@ void GameOfLifeCube::update(GLfloat deltaTime, double time) {
 
 void GameOfLifeCube::ImGUIHeader() {
     if (ImGui::CollapsingHeader("Game Of Life")) {
+        // TODO: make sub header for reset world
         int max_texture_size;
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
         if (ImGui::SliderInt("Size Of World (Not Setup Yet)", &this->worldSize, 6, (max_texture_size / 6))) {
             this->worldSize -= this->worldSize % 6;
             // TODO: update world size in GPU and CPU
         }
+        // END OF THE RESET CODE
         ImGui::SliderFloat("Speed of Game of Life (sec)", &this->speed, 0.001f, 15.0f);
         ImGui::Checkbox("Run game of life", &this->run);
         ImGui::Checkbox("Use help image (f, l, r, b, t, b)", &this->useHelpImg);
@@ -265,14 +267,16 @@ void GameOfLifeCube::ImGUIHeader() {
             if (this->useHelpImg) {
                 ImGui::Text("Warring, Using Help Image");
             }
-            ImGui::Checkbox("Use CUDA output instead of CPU output", &this->usingCuda);
+            ImGui::Checkbox("Use CUDA instead of CPU", &this->usingCuda);
         } else {
-            ImGui::Text("Cuda not avable");
+            ImGui::Text("Cuda not available");
         }
         if (ImGui::Button("Console Print CPU State")) {
             SPDLOG_INFO(spdlog::fmt_lib::format("State {}", this->qtyCpu));
             printboard(this->board, this->row, this->column);
         }
+        ImGui::Text("CPU World Size: row: %d, col(Note: row * 6): %d", this->row, this->column);
+        // TODO: sub header
         ImGui::Text("CPU        Time %f (ms)", this->cpuTime * 1000);
         ImGui::Text("GPU (CUDA) Time %f (ms)", this->cudaTime * 1000);
         ImGui::Text("The speedup(SerialTimeCost / CudaTimeCost) when using GPU is %lf", this->cpuTime / this->cudaTime);
