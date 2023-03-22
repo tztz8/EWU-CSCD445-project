@@ -11,4 +11,6 @@ void runlife(int * board, int * nextboard, int inbound_row, int inbound_col);
 
 void printboard(int * board, int row, int col);
 
+std::string stringBoard(int * board, int row, int col);
+
 #endif //EWU_CSCD445_PROJECT_GAMEOFLIFELOGIC_H

@@ -189,6 +189,7 @@ void GameOfLifeCube::create() {
         cudaEventCreate(&this->launch_end);
         this->cudaAvgTime = 0.0;
         this->qtyCuda = 0;
+        this->cudaTime = 0;
         genTexImg(&this->cudaTexID, false, this->imgBoard);
     }
     this->run = true;
@@ -196,6 +197,10 @@ void GameOfLifeCube::create() {
     this->timeStart = 0;
     this->useHelpImg = false;
     this->helpTexID = loadTexture("res/textures/Test/testImage.png");
+    this->qtyCpu = 0;
+    this->cpuAvgTime = 0.0;
+    this->cpuTime = 0;
+
 }
 
 void GameOfLifeCube::draw() {
@@ -258,16 +263,21 @@ void GameOfLifeCube::update(GLfloat deltaTime, double time) {
 void GameOfLifeCube::ImGUIHeader() {
     if (ImGui::CollapsingHeader("Game Of Life")) {
         ImGui::Spacing();
-        if (ImGui::CollapsingHeader("Reset Menu(Not Setup Yet)")) {
-            // TODO: reset
+        if (ImGui::CollapsingHeader("Reset Menu")) {
             int max_texture_size;
             glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
             if (ImGui::SliderInt("New Size Of World", &this->worldSize, 6, (max_texture_size / 6))) {
                 this->worldSize -= this->worldSize % 6;
             }
             if (ImGui::Button("Reset game of life world")) {
+                bool beforeRun = this->run;
+                double beforeTimeStart = this->timeStart;
+                float beforeSpeed = this->speed;
                 this->cleanUp();
                 this->create();
+                this->run = beforeRun;
+                this->timeStart = beforeTimeStart;
+                this->speed = beforeSpeed;
             }
             ImGui::Spacing();
         }
@@ -286,21 +296,31 @@ void GameOfLifeCube::ImGUIHeader() {
             SPDLOG_INFO(spdlog::fmt_lib::format("CPU State {}", this->qtyCpu));
             printboard(this->board, this->row, this->column);
         }
-        if (ImGui::Button("Console Print GPU State")) {
-            SPDLOG_INFO(spdlog::fmt_lib::format("GPU State {}", this->qtyCuda));
+        if (ImGui::Button("Console Print CUDA/GPU State")) {
+            SPDLOG_INFO(spdlog::fmt_lib::format("CUDA/GPU State {}", this->qtyCuda));
             printboard(this->cudaBoard, this->row, this->column);
         }
         ImGui::Text("World Size: row: %d, col(Note: row * 6): %d", this->row, this->column);
         // TODO: sub header
-        ImGui::Text("CPU        Time %f (ms)", this->cpuTime * 1000);
-        ImGui::Text("GPU (CUDA) Time %f (ms)", this->cudaTime * 1000);
-        ImGui::Text("The speedup(SerialTimeCost / CudaTimeCost) when using GPU is %lf", this->cpuTime / this->cudaTime);
-        ImGui::Text("CPU        Avg Time %f (ms)", this->cpuAvgTime * 1000);
-        ImGui::Text("GPU (CUDA) Avg Time %f (ms)", this->cudaAvgTime * 1000);
-        ImGui::Text("The avg speedup(SerialTimeCost / CudaTimeCost) when using GPU is %lf",
+        if (ImGui::CollapsingHeader("CPU Board")) {
+            ImGui::Text(stringBoard(this->board, this->row, this->column).c_str());
+        }
+        if (this->qtyCuda > 0) {
+            if (ImGui::CollapsingHeader("CUDA/GPU Board")) {
+                ImGui::Text(stringBoard(this->cudaBoard, this->row, this->column).c_str());
+            }
+        }
+        if (this->qtyCpu > 0) ImGui::Text("CPU        Time %f (ms)", this->cpuTime * 1000);
+        if (this->qtyCuda > 0) ImGui::Text("GPU (CUDA) Time %f (ms)", this->cudaTime * 1000);
+        if (this->qtyCpu > 0 && this->qtyCuda > 0) ImGui::Text("The speedup(SerialTimeCost / CudaTimeCost) when using GPU is %lf", this->cpuTime / this->cudaTime);
+        ImGui::Spacing();
+        if (this->qtyCpu > 0) ImGui::Text("CPU        Avg Time %f (ms)", this->cpuAvgTime * 1000);
+        if (this->qtyCuda > 0) ImGui::Text("GPU (CUDA) Avg Time %f (ms)", this->cudaAvgTime * 1000);
+        if (this->qtyCpu > 0 && this->qtyCuda > 0) ImGui::Text("The avg speedup(SerialTimeCost / CudaTimeCost) when using GPU is %lf",
                     this->cpuAvgTime / this->cudaAvgTime);
-        ImGui::Text("CPU State: %ld", this->qtyCpu);
-        ImGui::Text("GPU State: %ld", this->qtyCuda);
+        ImGui::Spacing();
+        ImGui::Text("     CPU State: %ld", this->qtyCpu);
+        ImGui::Text("CUDA/GPU State: %ld", this->qtyCuda);
     }
 }
 

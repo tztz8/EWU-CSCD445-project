@@ -66,6 +66,20 @@ void printboard(int * board, int row, int col) {
     }
 }
 
+std::string stringBoard(int * board, int row, int col) {
+    std::string printSting{};
+    for (int i = 0; i < row; ++i){
+        for (int j = 0; j < col; ++j) {
+            if (j == rightstart || j == leftstart || j == backstart || j == topstart || j == botstart) {
+                printSting.append(" ");
+            }
+            printSting.append(spdlog::fmt_lib::format("{},", board[(i * col)+j]));
+        }
+        printSting.append("\n");
+    }
+    return printSting;
+}
+
 int addUpLife(int * board,int col, int j, int i)
 {
     return  getxlinead(board, col, j+1,i)+
@@ -142,7 +156,7 @@ void addWrapMain(int * board,int * nextboard, int row, int col, int j)
 void mergetop(int * board, int * nextboard, int row, int col)
 {
     int x=0;
-    //merge front to topf
+    //merge top front to front top
     for (int i = start+1; i < frontend; ++i) {
         x= getxlinead(board,col,start,topstart+i)+
            getxlinead(board,col,start,i)+

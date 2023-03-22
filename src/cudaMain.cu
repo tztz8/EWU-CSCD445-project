@@ -43,6 +43,7 @@ __host__ void cornerHost(int* h_board, int * h_next_board,int y, int x)
     int *board =h_board;
     int *nextboard = h_next_board;
     int value=0;
+    y--;
     // the first four or the corners of the main box (warps)
     //left corner of front to top and left (warps)
     value = board[((x/3)*2)]+
@@ -345,22 +346,23 @@ __host__ void cornerHost(int* h_board, int * h_next_board,int y, int x)
             board[y*x+(2*(x/6))]+
 
             board[y*x+(3*(x/6))]+
-            board[y*x+(x - 1)]+
-            board[y*x+(x - 1)-1]+
+            board[y*x+((x/6)*5)]+
+            board[y*x+((x/6)*5)-1]+
 
             board[y*x+(3*(x/6))+1]+
-            board[(y-1)*x+(x - 1)]+
-            board[(y-1)*x+(x - 1)-1];
-
+            board[(y-1)*x+((x/6)*5)-1]+
+            board[(y-1)*x+((x/6)*5)-1];
+    nextboard[y*x+((x/6)*5)] = cpuDeadorAlive(value,
+                                              board[y*x+((x/6)*5)]);
 
 
 }
 
 __device__ int get_x_lined(int * board, int col,int x,int y)
 {
-    return  (board[(x * col) + y-1] && true)+
-            (board[(x * col) + y] && true)+
-            (board[(x * col) + y+1] && true);
+    return  (board[(y * col) + x-1])+
+            (board[(y * col) + x])+
+            (board[(y * col) + x+1]);
 }
 
 __device__ int cudaAddUpLife(int * board,int col, int x, int y)
@@ -395,9 +397,13 @@ __global__ void two_d_conway_block(int *board, int *next_board, int cols, int x_
     int total = 0;
 
     if((y < y_size) && (x < x_size)) {
-        total += board[index-1-cols] + board[index-cols] + board[index + 1 - cols] +
-                 board[index - 1] + board[index] + board[index+1] +
-                 board[index + cols - 1] + board[index + cols] + board[index + cols +1];
+
+        total = cudaAddUpLife(board,cols,x,y);
+//        next_board[index] = deadorAlive(total,board[index]);
+
+//        total += board[index-1-cols] + board[index-cols] + board[index + 1 - cols] +
+//                 board[index - 1] + board[index] + board[index+1] +
+//                 board[index + cols - 1] + board[index + cols] + board[index + cols +1];
         next_board[index] = (total == 3) || (total-(board[index]) == 3);
     }
 
@@ -438,12 +444,17 @@ void cuda_launch_conway_edges(int blocksize) {
     const int edge_length = size - 2;
     const dim3 numBlocks(edge_length/blocksize + (1&&(edge_length%blocksize)), 1, 1);
 
-    conway_edges<<<numBlocks, blocksize>>>(d_board + cols, d_nextboard + cols, d_board + size*4 - 1 + cols, cols, cols, 1, edge_length); // body wrap
-    conway_edges<<<numBlocks, blocksize>>>(d_board + size*4 - 1 + cols, d_nextboard + size*4 - 1 + cols, d_board + cols, cols, cols, -1, edge_length);
+    conway_edges<<<numBlocks, blocksize>>>(d_board + cols, d_nextboard + cols, d_board + size*4 - 1 + cols, cols, cols, 1, edge_length); // front to left
+    conway_edges<<<numBlocks, blocksize>>>(d_board + size*4 - 1 + cols, d_nextboard + size*4 - 1 + cols, d_board + cols, cols, cols, -1, edge_length); //left to front
 
-    conway_edges <<<numBlocks, blocksize>>>(d_board + 1, d_nextboard + 1, d_board + (4 * size)+1, 1, 1, cols, edge_length); //top front
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1, d_nextboard + 1, d_board + (4 * size)+1, 1, 1, cols, edge_length); //top to front
+    conway_edges <<<numBlocks, blocksize>>>(d_board + (4 * size)+1, d_nextboard + (4 * size)+1, d_board + 1, 1, 1, cols, edge_length); //front to top
+
     conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2, d_nextboard + 1 + size*2, d_board + 5*size - 2 + cols*(rows-1), 1, -1, cols, edge_length); //top back
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2, d_nextboard + 1 + size*2, d_board + 5*size - 2 + cols*(rows-1), 1, -1, cols, edge_length);
+
     conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size, d_nextboard + 1 + size, d_board + 5*size - 1 + cols, 1, cols, cols, edge_length); //top right
+
     conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*3, d_nextboard + 1 + size*3, d_board + 4*size + cols*(rows-2), 1, (-cols), cols, edge_length); //top left
 
     conway_edges <<<numBlocks, blocksize>>>(d_board+cols*(rows-1)+1, d_nextboard+cols*(rows-1)+1, d_board + size*5 + 1, 1, 1, (-cols), edge_length); // bottom front
@@ -460,9 +471,21 @@ __host__ void cudaMainInitialize(int size_set) {
     h_next_board = (int *) calloc(rows*cols, sizeof(int));
 
     //Initialize a pattern in the conway grid
-    for (int i = 0; i < cols; ++i) {
+    /*for (int i = 0; i < cols; ++i) {
         h_board[(3 * cols) + i] = 1;
-    }
+    }*/
+
+    h_board[3*cols + 10] = 1;
+    h_board[3*cols + 11] = 1;
+    h_board[3*cols + 12] = 1;
+    h_board[4*cols + 10] = 1;
+    h_board[5*cols + 11] = 1;
+
+    h_board[3*cols + 10 + size] = 1;
+    h_board[3*cols + 11 + size] = 1;
+    h_board[3*cols + 12 + size] = 1;
+    h_board[4*cols + 10 + size] = 1;
+    h_board[5*cols + 11 + size] = 1;
 
     //cuda memory allocation
     cudaMalloc(&d_board, sizeof(int)*rows*cols);
@@ -499,7 +522,7 @@ int *cudaMainUpdate() {
     const int edge_length = size - 2;
     const dim3 numBlocks(edge_length/blocksize + (1&&(edge_length%blocksize)), 1, 1);
 
-    //cuda_launch_conway_edges(blocksize);
+    cuda_launch_conway_edges(blocksize);
 
     cudaMemcpy(h_board, d_nextboard, rows*cols*sizeof(*d_nextboard), cudaMemcpyDeviceToHost);
     {
