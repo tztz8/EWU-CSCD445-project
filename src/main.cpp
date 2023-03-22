@@ -71,6 +71,7 @@ bool freeGLUTSizeUpdate;
 // title info
 std::string original_title("EWU-CSCD445-CUDA-GLFW-Project");
 
+// Info about the game pad (how to use the game pad)
 std::string gamePadInfo;
 
 /**
@@ -336,6 +337,12 @@ int main(int argc, char* argv[]) {
     return EXIT_SUCCESS;
 }
 
+/**
+ * @brief Setup Logger
+ * Setup spd logger, where and how much
+ * @param argc
+ * @param argv
+ */
 void setupLogger(int argc, char* argv[]) {
     spdlog::cfg::load_argv_levels(argc, argv);
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -357,13 +364,17 @@ void setupLogger(int argc, char* argv[]) {
     spdlog::set_level(spdlog::level::trace);
 }
 
+/**
+ * @brief Setup ImGUI
+ * Set up ImGUI so we can have a gui interface in the program
+ */
 void setupImGUI() {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+//    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     // Setup Dear ImGui styleis:issue is:open
 //    ImGui::StyleColorsDark();
@@ -398,6 +409,11 @@ void setupImGUI() {
     //IM_ASSERT(font != NULL);
 }
 
+/**
+ * Callback if there was a error from glfw
+ * @param error TODO
+ * @param description TODO
+ */
 static void glfw_error_callback(int error, const char* description) {
     SPDLOG_ERROR(spdlog::fmt_lib::format("Glfw Error {}: {}", error, description));
 }
@@ -1092,6 +1108,8 @@ std::map<char, bool> keyCurrentlyPressed;
 
 /**
  * On each frame it check for user input to toggle a flag
+ * @param setDescription Set the description in keyDescription map
+ * @param deltaTime delta time (time between frames)
  */
 void keyboard(bool setDescription, GLfloat deltaTime) {
     if (setDescription) keyDescription['q'] = "Quit program";
@@ -1166,6 +1184,13 @@ bool checkKey(char key, int GLFW_key) {
     return returnValue;
 }
 
+/**
+ * Helper to clap to top and bottom value
+ * @param value the original value
+ * @param clapTopValue the max value
+ * @param clapBottomValue the min value
+ * @return the clap value
+ */
 float clap(float value, float clapTopValue, float clapBottomValue) {
     if (value > clapTopValue) {
         return clapTopValue;
@@ -1176,10 +1201,22 @@ float clap(float value, float clapTopValue, float clapBottomValue) {
     }
 }
 
+/**
+ * Helper to clap a value
+ * @param value the original value
+ * @param clapValue the abs of limit
+ * @return the value clap
+ */
 float clap(float value, float clapValue) {
     return clap(value, clapValue, clapValue * -1);
 }
 
+/**
+ * Check game pad input and update value from game pad values
+ * @param logGamePadButtons do we log and add to return string with the info of the input options
+ * @param deltaTime delta time (time between frames)
+ * @return return string (use to update info on using game pad)
+ */
 std::string gamepad(bool logGamePadButtons, GLfloat deltaTime) {
     std::string returnString{};
     if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
@@ -1327,6 +1364,11 @@ std::string gamepad(bool logGamePadButtons, GLfloat deltaTime) {
     return returnString;
 }
 
+/**
+ * Callback when there is a event with joysticks
+ * @param jid na
+ * @param event the event
+ */
 void joystick_callback(int jid, int event)
 {
     if (event == GLFW_CONNECTED)
@@ -1339,6 +1381,7 @@ void joystick_callback(int jid, int event)
         // The joystick was disconnected
         SPDLOG_INFO("Joy Pad Disconnected");
     }
+    // Update info on game pad
     gamePadInfo = gamepad(true, 0);
 }
 

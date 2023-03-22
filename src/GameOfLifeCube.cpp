@@ -10,6 +10,7 @@
 int DEBUG_GLOBAL_ROWS;
 int DEBUG_GLOBAL_COLS;
 
+
 void GameOfLifeCube::cubeCreate() {
     SPDLOG_INFO("Initialize GameOfLife Cube");
     float side = 0.5f;
@@ -165,7 +166,9 @@ void GameOfLifeCube::cpuCreate(int size) {
         this->board[(3 * column) + i] = 1;
     }
 
-    genCPUTexImg(false);
+    genImg(this->board, this->imgBoard);
+
+    genTexImg(&this->cpuTexID, false, this->imgBoard);
 }
 
 void GameOfLifeCube::create() {
@@ -187,6 +190,7 @@ void GameOfLifeCube::create() {
         cudaEventCreate(&this->launch_end);
         this->cudaAvgTime = 0.0;
         this->qtyCuda = 0;
+        genTexImg(&this->cudaTexID, false, this->imgBoard);
     }
     this->run = true;
     this->speed = 5.0f;
@@ -227,7 +231,9 @@ void GameOfLifeCube::update(GLfloat deltaTime, double time) {
 //                cudaEventRecord(launch_begin, 0);
                 double now, then;
                 now = currentTime();
-                cudaMainUpdate();
+                int * cudaBoard = cudaMainUpdate();
+                genImg(cudaBoard, this->imgBoard);
+                genTexImg(&this->cudaTexID, true, this->imgBoard);
                 then = currentTime();
                 this->cudaTime = static_cast<float>(then - now);
 //                cudaEventRecord(launch_end, 0);
@@ -292,8 +298,8 @@ void GameOfLifeCube::ImGUIHeader() {
 void GameOfLifeCube::cleanUp() {
     if (this->havaCuda) {
         cudaMainCleanUp();
-//        cudaEventDestroy(this->launch_begin);
-//        cudaEventDestroy(this->launch_end);
+        cudaEventDestroy(this->launch_begin);
+        cudaEventDestroy(this->launch_end);
     }
     free(this->board);
     free(this->pboard);
@@ -307,27 +313,31 @@ void GameOfLifeCube::cpuUpdate(double time) {
     this->pboard = this->board;
     this->board = tempBoard;
 
-    for (size_t x = 0; x < this->column; x++) {
-        for (size_t y = 0; y < this->row; y++) {
-            this->imgBoard[x + y * this->column] = UINT32_MAX * (this->board[x + y * this->column] && true);
-        }
-    }
+    genImg(this->board, this->imgBoard);
 
-    genCPUTexImg(true);
+    genTexImg(&this->cpuTexID, true, this->imgBoard);
 }
 
-void GameOfLifeCube::genCPUTexImg(bool freeOldImg) {
+void GameOfLifeCube::genTexImg(GLuint *texId, bool freeOldImg, GLuint *inputImgBoard) {
     if (freeOldImg) {
-        glDeleteTextures(1, &this->cpuTexID);
+        glDeleteTextures(1, texId);
     }
-    glGenTextures(1, &this->cpuTexID);
-    glBindTexture(GL_TEXTURE_2D, this->cpuTexID);
+    glGenTextures(1, texId);
+    glBindTexture(GL_TEXTURE_2D, *texId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                  this->column, this->row, 0,
-                 GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, this->imgBoard);
+                 GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, inputImgBoard);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    glBindTexture(GL_TEXTURE_2D, this->cpuTexID);
+    glBindTexture(GL_TEXTURE_2D, *texId);
+}
+
+void GameOfLifeCube::genImg(int *board, GLuint *outputImgBoard) {
+    for (size_t x = 0; x < this->column; x++) {
+        for (size_t y = 0; y < this->row; y++) {
+            outputImgBoard[x + y * this->column] = UINT32_MAX * (board[x + y * this->column] && true);
+        }
+    }
 }

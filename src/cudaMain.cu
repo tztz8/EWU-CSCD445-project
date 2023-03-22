@@ -5,46 +5,18 @@
 
 #include "cudaMain.cuh"
 
-// Texture ID
-GLuint cudaTexID;
-
-double timeStart;
-
-int device = 0;
-
 int *h_board;
 int *d_board;
 int *d_nextboard;
 int rows;
 int cols;
 int size;
-int threadsPerBlock;
-
-GLuint genCudaTexImage() {
-    GLuint tid;
-    glGenTextures(1, &tid);
-    glBindTexture(GL_TEXTURE_2D, tid);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,  GL_RED,
-                 GL_FLOAT, h_dataA);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    glBindTexture(GL_TEXTURE_2D, tid);
-    return tid;
-}
 
 __host__ int  cpu_get_x_lined(int * board, int col,int y,int x)
 {
     return   board[(y * col) + x-1]+
              board[(y * col) + x]+
              board[(y * col) + x+1];
-}
-
-__host__ int  cpu_get_y_lined(int * board, int col,int y,int x) {
-    return board[(y * col + 1) + x] +
-           board[(y * col) + x] +
-           board[(y * col - 1) + x];
 }
 
 __host__ int cpuDeadorAlive(int value, int currentLocation){
@@ -61,6 +33,8 @@ __host__ int cpuDeadorAlive(int value, int currentLocation){
 
 // the y and x values should be the max-1 and are static for this
 // function
+
+//TODO need to check if the y needs to be "-1"
 __host__ void cornerHost(int* board, int * nextboard,int y, int x)
 {
     int value=0;
@@ -228,44 +202,95 @@ __host__ void cornerHost(int* board, int * nextboard,int y, int x)
     nextboard[y*x+(x/6)]= cpuDeadorAlive(value,
                                              board[y*x+(x/6)]);
 
-    // right corner back
+    // right with back and bot
     value =     board[y*x+(x - 1)]+
             board[(y)*x+(x - 1)-1]+
 
-            getxlinead(board, col,wrapBoxRow,backstart)+
-            getxlinead(board, col,wrapBoxRow-1,backstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,backstart);
+    cpu_get_x_lined(board,x,y,2*(x/6)-1)+
+    cpu_get_x_lined(board,x,y-1,2*(x/6)-1);
 
-    cpu_get_x_lined(board,x,y,(x/6))+
-    cpu_get_x_lined(board,x,y-1,(x/6));
+    nextboard[y*x+2*(x/6)-1]= cpuDeadorAlive(value,
+                                         board[y*x+2*(x/6)-1]);
 
-    nextboard[y*x+(x/6)]= cpuDeadorAlive(value,
-                                         board[y*x+(x/6)]);
-    /*
-     *
-    x =
+    // back with left and bot
+    value =     board[y*x+5*(x/6)]+
+            board[y*x+5*(x/6)+1]+
 
-    //printboard(nextboard);
+    cpu_get_x_lined(board,x,y,(3*(x/6)-1))+
+    cpu_get_x_lined(board,x,y-1,(3*(x/6)-1));
 
-    // bot left corners of main
-    // left corner back
-    x =     board[start*col+botend]+
-            board[start*col+botend-1]+
-            getxlinead(board, col,wrapBoxRow,backstart)+
-            getxlinead(board, col,wrapBoxRow-1,backstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,backstart);
+    nextboard[y*x+(3*(x/6)-1)]= cpuDeadorAlive(value,
+                                             board[y*x+(3*(x/6)-1)]);
 
-    //printboard(nextboard);
-    // bot left corners of main
-    // left corner left
-    x =     board[start*col+botstart]+
-            board[(start+1)*col+botstart]+
-            getxlinead(board, col,wrapBoxRow,leftstart)+
-            getxlinead(board, col,wrapBoxRow-1,backstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,leftstart);
+// For the top
+// top with left and front
 
-     */
+    value   =   board[0*x+0]+
+                board[0*x+0+1]+
 
+                board[0*x+(3*(x/6))]+
+                board[0*x+((x/3)*2)]+
+                board[0*x+((x/3)*2)+1]+
+
+                board[(1)*x+(3*(x/6))]+
+                board[(1)*x+((x/3)*2)]+
+                board[(1)*x+((x/3)*2)+1];
+
+    nextboard[0*x+((x/3)*2)]= cpuDeadorAlive(value,
+                                               board[0*x+((x/3)*2)]);
+
+    //top with right and front
+    value =     board[0*x+(x/6-1)-1]+
+            board[0*x+(x/6-1)]+
+
+            board[0*x+((x/6)*5-1)-1]+
+            board[0*x+((x/6)*5-1)]+
+            board[0*x+(x/6)]+
+
+            board[(1)*x+((x/6)*5-1)-1]+
+            board[(1)*x+((x/6)*5-1)]+
+            board[(0)*x+(x/6)+1];
+
+    nextboard[0*x+((x/6)*5-1)]= cpuDeadorAlive(value,
+                                             board[0*x+((x/6)*5-1)]);
+
+    //Top with back and right
+    value = board[0*x+(2*(x/6))]+
+            board[0*x+(2*(x/6))+1];
+
+            board[0*x+(2*(x/6)-1)]+
+            board[y*x+((x/6)*5-1)]+
+            board[y*x+((x/6)*5-1)+1]+
+
+            board[1*x+(2*(x/6)-1)]+
+            board[(y-1)*x+((x/6)*5-1)]+
+            board[(y-1)*x+((x/6)*5-1)-1];
+
+            nextboard[y*x+((x/6)*5-1)] = cpuDeadorAlive(value,
+                                                       board[y*x+((x/6)*5-1)]);
+
+
+    // Top with back left
+/*    value =     board[start*col+rightend-1]+
+            board[(wrapBoxRow-1)*col+topend]+
+            board[(wrapBoxRow-1)*col+topend-1]+
+
+            board[start*col+rightend]+
+            board[wrapBoxRow*col+topend]+
+            board[wrapBoxRow*col+topend-1]+
+
+            board[start*col+backstart]+
+            board[start*col+backstart+1];*/
+
+/*
+ *
+
+
+    //printf("%d", frontstart);
+
+
+
+ */
 }
 
 __device__ int get_x_lined(int * board, int col,int x,int y)
@@ -275,12 +300,6 @@ __device__ int get_x_lined(int * board, int col,int x,int y)
              board[(x * col) + y+1];
 }
 
-__device__ int  get_y_lined(int * board, int col,int x,int y)
-{
-    return   board[(x * col+1) + y]+
-             board[(x * col) + y]+
-             board[(x * col-1) + y];
-}
 __device__ int cudaAddUpLife(int * board,int col, int x, int y)
 {
     return  get_x_lined(board, col, x,y+1)+
@@ -299,12 +318,7 @@ __device__ int deadorAlive(int value, int currentLocation)
     else
         return 0;
 }
-__device__ int addUpLife(int * board,int col, int j, int i)
-{
-    return  get_x_lined(board, col, j+1,i)+
-            get_x_lined(board, col, j,i)+
-            get_x_lined(board, col, j-1,i);
-}
+
 
 __global__ void two_d_conway_block(int *board, int *next_board, int cols, int x_size, int y_size)
 {
@@ -317,12 +331,24 @@ __global__ void two_d_conway_block(int *board, int *next_board, int cols, int x_
     unsigned int index = x*cols+y;
     int total = 0;
 
-    if(y < x_size && x < y_size)
-    {
-        total = addUpLife(board,cols,x,y);
-        next_board[index] = deadorAlive(total,board[index]);
+    if(y < x_size && x < y_size) {
+        total = cudaAddUpLife(board, cols, x, y);
+        next_board[index] = deadorAlive(total, board[index]);
     }
 }
+
+
+void launch_two_d_conway_block(dim3 blocksize)
+{
+    //edge_length = size - 2
+    //const dim3 numBlocks(edge_length/blocksize + (1&&(edge_length%blocksize)), 1, 1);
+    const dim3 numBlocksMain(cols*rows + size*4-2,1,1);
+    const dim3 numBlocks(cols*rows + size-2,1,1);
+    two_d_conway_block<<<numBlocksMain, blocksize>>>(d_board + 1 + cols, d_nextboard + 1 + cols, cols, (rows * size*4)-2, cols-2);
+    two_d_conway_block<<<numBlocks, blocksize>>>(d_board + 1 + size*4 + cols, d_nextboard + 1 + size*4 + cols, cols, size-2, size-2);
+    two_d_conway_block<<<numBlocks, blocksize>>>(d_board + 1 + size*5 + cols, d_nextboard + 1 + size*5 + cols, cols, size-2, size-2);
+}
+
 
 __global__ void conway_edges(int *self, int *self_next, int *other, int self_idx_step, int other_idx_step, int adjacent_offset, int len) {
     //Determine the index
@@ -343,31 +369,26 @@ __global__ void conway_edges(int *self, int *self_next, int *other, int self_idx
     *self_next = (sum == 3) || (sum-(*self) == 3);
 }
 
-//temporarily working on my launches here
-void launchit () {
+
+void cuda_launch_conway_edges(int blocksize) {
     const int edge_length = size - 2;
     const dim3 numBlocks(edge_length/blocksize + (1&&(edge_length%blocksize)), 1, 1);
 
-    conway_edges(int *self, int *self_next, int *other, int self_idx_step, int other_idx_step, int adjacent_offset, int len);
+//    conway_edges(d_board + cols, d_nextboard + cols, d_board + size*4 - 1 + cols, cols, cols, 1, edge_length); // body wrap
+//    conway_edges(d_board + size*4 - 1 + cols, d_nextboard + size*4 - 1 + cols, d_board + cols, cols, cols, -1, edge_length);
 
-    conway_edges(board + cols, next_board + cols, board + size*4 - 1 + cols, cols, cols, 1, edge_length); // body wrap
-    conway_edges(board + size*4 - 1 + cols, next_board + size*4 - 1 + cols, board + cols, cols, cols, -1, edge_length);
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1, d_nextboard + 1, d_board + (4 * size)+1, 1, 1, cols, edge_length); //top front
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2, d_nextboard + 1 + size*2, d_board + 5*size - 2 + cols*(rows-1), 1, -1, cols, edge_length); //top back
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size, d_nextboard + 1 + size, d_board + 5*size - 1 + cols, 1, cols, cols, edge_length); //top right
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*3, d_nextboard + 1 + size*3, d_board + 4*size + cols*(rows-2), 1, (-cols), cols, edge_length); //top left
 
-    conway_edges <<<numBlocks, blocksize>>>(board + 1, next_board + 1, board + (4 * size)+1, 1, 1, cols, edge_length); //top front
-    conway_edges <<<numBlocks, blocksize>>>(board + 1 + size*2, next_board + 1 + size*2, board + 5*size - 2 + cols*(rows-1), 1, -1, cols, edge_length); //top back
-    conway_edges <<<numBlocks, blocksize>>>(board + 1 + size, next_board + 1 + size, board + 5*size - 1 + cols, 1, cols, cols, edge_length); //top right
-    conway_edges <<<numBlocks, blocksize>>>(board + 1 + size*3, next_board + 1 + size*3, board + 4*size + cols*(rows-2), 1, (-cols), cols, edge_length); //top left
-
-    conway_edges <<<numBlocks, blocksize>>>(board+cols*(rows-1)+1, next_board+cols*(rows-1)+1, board + size*5 + 1, 1, 1, (-cols), edge_length); // bottom front
-
+    conway_edges <<<numBlocks, blocksize>>>(d_board+cols*(rows-1)+1, d_nextboard+cols*(rows-1)+1, d_board + size*5 + 1, 1, 1, (-cols), edge_length); // bottom front
 }
 // Called when setting things up before graphs loop
 __host__ void cudaMainInitialize(int size) {
     SPDLOG_INFO("Initialize Cuda");
-    timeStart = 0;
+    float timeStart = 0;
 
-    //memory allocation
-    cudaTexID = genCudaTexImage();
     h_board = (int *)malloc(rows*cols*sizeof(int));
 
     //cuda memory allocation
@@ -378,10 +399,11 @@ __host__ void cudaMainInitialize(int size) {
 
     cudaMemcpy(d_board,h_board, sizeof(int)*size, cudaMemcpyHostToDevice);
 
+
 }
 
 // Called for every frame
-__host__ void cudaMainUpdate() {
+int * cudaMainUpdate() {
     cudaError_t code = cudaDeviceSynchronize();
     if (code != cudaSuccess){
         SPDLOG_ERROR(spdlog::fmt_lib::format("Cuda Device Synchronize error -- {}", cudaGetErrorString(code)));
@@ -391,14 +413,32 @@ __host__ void cudaMainUpdate() {
     if (code != cudaSuccess){
         SPDLOG_ERROR(spdlog::fmt_lib::format("Cuda Kernel Launch error -- {}", cudaGetErrorString(code)));
     }
+    const int blocksize = 32;
+    const dim3 blockdim(blocksize, blocksize, 1);
 
+    // #### Corners ####
+    cornerHost(d_board, d_nextboard, rows,cols);
+
+    // #### Field ####
+    launch_two_d_conway_block(blockdim);
+
+    // #### Edges ####
+    const int edge_length = size - 2;
+    const dim3 numBlocks(edge_length/blocksize + (1&&(edge_length%blocksize)), 1, 1);
+
+    cuda_launch_conway_edges(blocksize);
+//    conway_edges(board + cols, next_board + cols, board + size*4 - 1 + cols, cols, cols, 1, edge_length); // body wrap
+//    conway_edges(board + size*4 - 1 + cols, next_board + size*4 - 1 + cols, board + cols, cols, cols, -1, edge_length);
+//
+//    conway_edges <<<numBlocks, blocksize>>>(board + 1, next_board + 1, board + (4 * size)+1, 1, 1, cols, edge_length); //top front
+//    conway_edges <<<numBlocks, blocksize>>>(board + 1 + size*2, next_board + 1 + size*2, board + 5*size - 2 + cols*(rows-1), 1, -1, cols, edge_length); //top back
+//    conway_edges <<<numBlocks, blocksize>>>(board + 1 + size, next_board + 1 + size, board + 5*size - 1 + cols, 1, cols, cols, edge_length); //top right
+//    conway_edges <<<numBlocks, blocksize>>>(board + 1 + size*3, next_board + 1 + size*3, board + 4*size + cols*(rows-2), 1, (-cols), cols, edge_length); //top left
+//
+//    conway_edges <<<numBlocks, blocksize>>>(board+cols*(rows-1)+1, next_board+cols*(rows-1)+1, board + size*5 + 1, 1, 1, (-cols), edge_length); // bottom front
 
 
     // copy result from device to host
-
-    glDeleteTextures(1, &cudaTexID);
-    cudaTexID = genCudaTexImage();
-
 
 }
 
@@ -411,92 +451,8 @@ __host__ void cudaMainCleanUp() {
     if (code != cudaSuccess){
         SPDLOG_ERROR(spdlog::fmt_lib::format("Cuda Kernel Launch error -- {}", cudaGetErrorString(code)));
     }
-    // copy result from device to host
-    //cudaMemcpy2D( h_dataA, width * sizeof(float), d_dataA, pitch, width * sizeof(float), height,cudaMemcpyDeviceToHost );
 
-    free(h_dataA);
-}
-
-
-
-
-
-
-
-
-
-//kept just in case it has usful info
-__global__ void oldk1_from_hmwk( float* g_dataA, float* g_dataB, int floatpitch, int width)
-{
-    extern __shared__ float s_data[];
-    //Write this kernel to achieve the same output as the provided k0, but you will have to use
-    // shared memory.
-
-    // global thread(data) row index
-    unsigned int i = blockIdx.y * blockDim.y + threadIdx.y;
-    i = i + 1; //because the edge of the data is not processed
-
-    // global thread(data) column index
-    unsigned int j = blockIdx.x * blockDim.x + threadIdx.x;
-    j = j + 1; //because the edge of the data is not processed
-
-    int threadID = threadIdx.x;
-
-    int s_rowwidth = blockDim.x + 2;
-
-    // Index's
-
-    // -- Global
-    int g_ind_0 = (i-1) * floatpitch +  j;
-    int g_ind_1 = i * floatpitch + j;
-    int g_ind_2 = (i+1) * floatpitch +  j;
-
-    // -- Shared
-    int s_ind_0 = threadID + 1 + (s_rowwidth * 0);
-    int s_ind_1 = threadID + 1 + (s_rowwidth * 1);
-    int s_ind_2 = threadID + 1 + (s_rowwidth * 2);
-    int s_index_result = threadID + 1 + (s_rowwidth * 3);
-
-    //Check the boundary. DO NOT copy data from out of bounds, but the thread MUST remain alive for syncthreads
-    //Each thread should copy in 3 values
-    if( i >= width - 1|| j >= width || i < 1 || j < 1 ) {
-        // Do Nothing (Keep thread for __syncthreads)
-    } else {
-        s_data[s_ind_0-1] = g_dataA[g_ind_0-1];
-        s_data[s_ind_1-1] = g_dataA[g_ind_1-1];
-        s_data[s_ind_2-1] = g_dataA[g_ind_2-1];
-        s_data[s_ind_0+1] = g_dataA[g_ind_0+1];
-        s_data[s_ind_1+1] = g_dataA[g_ind_1+1];
-        s_data[s_ind_2+1] = g_dataA[g_ind_2+1];
-    }
-    __syncthreads();
-
-    if( i >= width - 1|| j >= width - 1 || i < 1 || j < 1 ) {
-        // Do Nothing (Keep thread for __syncthreads)
-    } else {
-        const int s_i = 1;
-        const int s_j = threadID + 1;
-        const int pitch = s_rowwidth;
-
-        //Calculate our cell's result using a LOCAL variable, then write that variable to the result
-        s_data[s_index_result] = (
-                                         0.2f * s_data[s_i * pitch + s_j] +               //itself
-                                         0.1f * s_data[(s_i-1) * pitch +  s_j   ] +       //N
-                                         0.1f * s_data[(s_i-1) * pitch + (s_j+1)] +       //NE
-                                         0.1f * s_data[ s_i    * pitch + (s_j+1)] +       //E
-                                         0.1f * s_data[(s_i+1) * pitch + (s_j+1)] +       //SE
-                                         0.1f * s_data[(s_i+1) * pitch +  s_j   ] +       //S
-                                         0.1f * s_data[(s_i+1) * pitch + (s_j-1)] +       //SW
-                                         0.1f * s_data[ s_i    * pitch + (s_j-1)] +       //W
-                                         0.1f * s_data[(s_i-1) * pitch + (s_j-1)]         //NW
-                                 ) * 0.95f;
-    }
-
-    __syncthreads();
-
-    if( i >= width - 1|| j >= width - 1 || i < 1 || j < 1 ) {
-        return;
-    }
-
-    g_dataB[i * floatpitch + j] = s_data[s_index_result];
+    cudaFree(d_board);
+    cudaFree(d_nextboard);
+    free(h_board);
 }
