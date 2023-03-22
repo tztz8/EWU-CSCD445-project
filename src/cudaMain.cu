@@ -144,21 +144,21 @@ __host__ void cudaMainInitialize(int size_set) {
     h_next_board = (int *) calloc(rows*cols, sizeof(int));
 
     //Initialize a pattern in the conway grid
-//    for (int i = 0; i < cols; ++i) {
-//        h_board[(3 * cols) + i] = 1;
-//    }
+    for (int i = 0; i < cols; ++i) {
+        h_board[(3 * cols) + i] = 1;
+    }
 // Glider
-    h_board[3*cols + 110] = 1;
-    h_board[3*cols + 111] = 1;
-    h_board[3*cols + 112] = 1;
-    h_board[4*cols + 110] = 1;
-    h_board[5*cols + 111] = 1;
-
-    h_board[3*cols + 110 + size] = 1;
-    h_board[3*cols + 111 + size] = 1;
-    h_board[3*cols + 112 + size] = 1;
-    h_board[4*cols + 110 + size] = 1;
-    h_board[5*cols + 111 + size] = 1;
+//    h_board[3*cols + 110] = 1;
+//    h_board[3*cols + 111] = 1;
+//    h_board[3*cols + 112] = 1;
+//    h_board[4*cols + 110] = 1;
+//    h_board[5*cols + 111] = 1;
+//
+//    h_board[3*cols + 110 + size] = 1;
+//    h_board[3*cols + 111 + size] = 1;
+//    h_board[3*cols + 112 + size] = 1;
+//    h_board[4*cols + 110 + size] = 1;
+//    h_board[5*cols + 111 + size] = 1;
 
     //cuda memory allocation
     cudaMalloc(&d_board, sizeof(int)*rows*cols);

@@ -24,7 +24,7 @@ private:
     double timeStart;
 
     // Size of the world
-    int worldSize = 16;// 1350
+    int worldSize = 300;// 1350
 
     // Flag if we have cuda
     bool havaCuda;
