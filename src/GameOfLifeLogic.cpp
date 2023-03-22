@@ -174,9 +174,9 @@ void mergetop(int * board, int * nextboard, int row, int col)
         deadorAlive(board,nextboard, col,x,start,i+topstart);
     }
 
-    //merge back
+    //merge front bot to back top
     for (int i = start+1; i <frontend; ++i) {
-        x= getxlinead(board,col,wrapBoxRow,topstart+i)+
+        x= getxlinead(board,col,wrapBoxRow,6+i)+
            getxlinead(board,col,start,backstart+i)+
            getxlinead(board,col,start+1,backstart+i);
         deadorAlive(board,nextboard, col, x,start,i+backstart);
@@ -187,7 +187,7 @@ void mergetop(int * board, int * nextboard, int row, int col)
            getxlinead(board,col,wrapBoxRow,topstart+i)+
            getxlinead(board,col,start,backstart+i);
 
-        deadorAlive(board,nextboard, col, x,start,i+topstart);
+        deadorAlive(board,nextboard, col, x,wrapBoxRow,i+topstart);
     }
 
     //left
@@ -649,7 +649,7 @@ void runlife(int * board, int * nextboard, int inbound_row, int inbound_col)
     int x = 0;
     //body
     for (int i = start; i < row ; ++i) {
-        for (int j = start; j < wrapBoxColumn-1 ; ++j) {
+        for (int j = start; j < wrapBoxColumn ; ++j) {
             if(i==0){
                 mergetop(board,nextboard, row, column);
                // x = addUpLife(board, i, j,column);

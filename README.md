@@ -53,7 +53,17 @@ for (int i = 0; i < column; ++i) {
 
 Making a Line 3 from the top of all faces of the cube
 
-> TODO: add example
+### Example
+
+> World size of 12
+
+Cube
+
+![3d Cube](doc/Screenshot%20from%202023-03-21%2020-20-13.png)
+
+Data of all faces (front, right, back, left, top, bottom)
+
+![all faces data](doc/Screenshot%20from%202023-03-21%2020-17-35.png)
 
 ## Report
 
@@ -181,6 +191,15 @@ Gives control and info over the Game Of Life
 ### Sample run
 
 BLANK
+
+| Cuda/GPU                                                  | CPU                                                       |
+| --------------------------------------------------------- | --------------------------------------------------------- |
+| Cube                                                      | Cube                                                      |
+|                                                           |                                                           |
+| Data of all faces (front, right, back, left, top, bottom) | Data of all faces (front, right, back, left, top, bottom) |
+|                                                           |                                                           |
+
+
 
 ### SpeedUp
 

@@ -96,20 +96,20 @@ void GameOfLifeCube::cubeCreate() {
             3.0f / 6.0f, 0.0f,
             3.0f / 6.0f, 1.0f,
 
-            1.0f, 1.0f, // v7,v4,v3,v2 (bottom)
-            1.0f, 0.0f,
             5.0f / 6.0f, 0.0f,
             5.0f / 6.0f, 1.0f,
+            1.0f, 1.0f, // v7,v4,v3,v2 (bottom)
+            1.0f, 0.0f,
 
             1.0f / 6.0f, 1.0f,
             2.0f / 6.0f, 1.0f, // v0,v3,v4,v5 (right)
             2.0f / 6.0f, 0.0f,
             1.0f / 6.0f, 0.0f,
 
-            5.0f / 6.0f, 0.0f,
-            4.0f / 6.0f, 0.0f,
-            4.0f / 6.0f, 1.0f,
-            5.0f / 6.0f, 1.0f, // v0,v5,v6,v1 (top)
+            5.0f/6.0f, 1.0f,
+            4.0f/6.0f, 1.0f,
+            4.0f/6.0f, 0.0f,
+            5.0f/6.0f, 0.0f, // v0,v5,v6,v1 (top)
 
             3.0f / 6.0f, 0.0f, // v4,v7,v6,v5 (back)
             2.0f / 6.0f, 0.0f,
@@ -159,12 +159,13 @@ void GameOfLifeCube::cpuCreate(int size) {
     this->imgBoard = (GLuint *) calloc(this->row * this->column, sizeof(GLuint));
 
     //Initialize a pattern in the conway grid
-//    for (int i = 0; i < (4*(this->column/6)); ++i) {
-//        this->board[(3 * column )+ i] = 1;
-//    }
     for (int i = 0; i < column; ++i) {
         this->board[(3 * column) + i] = 1;
     }
+
+//    for (int i = 0; i < column; ++i) {
+//        this->board[((row - 3) * column) + i] = 1;
+//    }
 
     genImg(this->board, this->imgBoard);
 
@@ -270,20 +271,27 @@ void GameOfLifeCube::ImGUIHeader() {
                 this->worldSize -= this->worldSize % 6;
             }
             if (ImGui::Button("Reset game of life world")) {
+                // Save some variable before reset
                 bool beforeRun = this->run;
                 double beforeTimeStart = this->timeStart;
                 float beforeSpeed = this->speed;
-                this->cleanUp();
-                this->create();
+                bool beforeUsingCuda = this->usingCuda;
+
+                // Reset world
+                this->cleanUp(); // Free
+                this->create(); // Make
+
+                // restore some variable before reset
                 this->run = beforeRun;
                 this->timeStart = beforeTimeStart;
                 this->speed = beforeSpeed;
+                this->usingCuda = beforeUsingCuda;
             }
             ImGui::Spacing();
         }
         ImGui::SliderFloat("Speed of Game of Life (sec)", &this->speed, 0.001f, 15.0f);
         ImGui::Checkbox("Run game of life", &this->run);
-        ImGui::Checkbox("Use help image (f, l, r, b, t, b)", &this->useHelpImg);
+        ImGui::Checkbox("Use help image (front, right, back, left, top, bottom)", &this->useHelpImg);
         if (this->havaCuda) {
             if (this->useHelpImg) {
                 ImGui::Text("Warring, Using Help Image");

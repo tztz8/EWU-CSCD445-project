@@ -439,7 +439,6 @@ __global__ void conway_edges(int *self, int *self_next, int *other, int self_idx
     *self_next = (sum == 3) || (sum-(*self) == 3);
 }
 
-
 void cuda_launch_conway_edges(int blocksize) {
     const int edge_length = size - 2;
     const dim3 numBlocks(edge_length/blocksize + (1&&(edge_length%blocksize)), 1, 1);
@@ -450,15 +449,22 @@ void cuda_launch_conway_edges(int blocksize) {
     conway_edges <<<numBlocks, blocksize>>>(d_board + 1, d_nextboard + 1, d_board + (4 * size)+1, 1, 1, cols, edge_length); //top to front
     conway_edges <<<numBlocks, blocksize>>>(d_board + (4 * size)+1, d_nextboard + (4 * size)+1, d_board + 1, 1, 1, cols, edge_length); //front to top
 
-    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2, d_nextboard + 1 + size*2, d_board + 5*size - 2 + cols*(rows-1), 1, -1, cols, edge_length); //top back
-    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2, d_nextboard + 1 + size*2, d_board + 5*size - 2 + cols*(rows-1), 1, -1, cols, edge_length);
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2, d_nextboard + 1 + size*2, d_board + 5*size - 2 + cols*(rows-1), 1, -1, cols, edge_length); //top to back
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 5*size - 2 + cols*(rows-1), d_nextboard + 5*size - 2 + cols*(rows-1), d_board + 1 + size*2, -1, 1, -cols, edge_length); //back to top
 
-    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size, d_nextboard + 1 + size, d_board + 5*size - 1 + cols, 1, cols, cols, edge_length); //top right
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size, d_nextboard + 1 + size, d_board + 5*size - 1 + cols, 1, cols, cols, edge_length); //top to right
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 5*size - 1 + cols, d_nextboard + 5*size - 1 + cols, d_board + 1 + size, cols, 1, -1, edge_length); //right to top
 
-    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*3, d_nextboard + 1 + size*3, d_board + 4*size + cols*(rows-2), 1, (-cols), cols, edge_length); //top left
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*3, d_nextboard + 1 + size*3, d_board + 4*size + cols*(rows-2), 1, (-cols), cols, edge_length); //top to left
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 4*size + cols*(rows-2), d_nextboard + 4*size + cols*(rows-2), d_board + 1 + size*3, (-cols), 1, 1, edge_length); //left to top
 
-    conway_edges <<<numBlocks, blocksize>>>(d_board+cols*(rows-1)+1, d_nextboard+cols*(rows-1)+1, d_board + size*5 + 1, 1, 1, (-cols), edge_length); // bottom front
+    conway_edges <<<numBlocks, blocksize>>>(d_board+cols*(rows-1)+1, d_nextboard+cols*(rows-1)+1, d_board + size*5 + 1, 1, 1, (-cols), edge_length); // bottom to front
+    conway_edges <<<numBlocks, blocksize>>>(d_board + size*5 + 1, d_nextboard + size*5 + 1, d_board+cols*(rows-1)+1, 1, 1, (-cols), edge_length); // front to bottom
+
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2, d_nextboard + 1 + size*2, d_board + size*6 - 2 + cols*rows-1, 1, -1, (-cols), edge_length); // bottom to back
+    conway_edges <<<numBlocks, blocksize>>>(d_board + size*6 - 2 + cols*rows-1, d_nextboard + size*6 - 2 + cols*rows-1, d_board + 1 + size*2, -1, 1, (-cols), edge_length); // back to bottom
 }
+
 // Called when setting things up before graphs loop
 __host__ void cudaMainInitialize(int size_set) {
     SPDLOG_INFO("Initialize Cuda");
