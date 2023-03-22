@@ -41,6 +41,20 @@ Each face of a cube will have a 2d grid of Conway games of life and their edges 
 
 At min, a cube with each face running Conway games of life on CUDA that has the edges interact with some start state to see it run (Ex have some Glider’s)
 
+## World Start (Test data)
+
+In `void GameOfLifeCube::cpuCreate(int size)` (file [GameOfLifeCube.cpp](src/GameOfLifeCube.cpp)) for the CPU Code and in `__host__ void cudaMainInitialize(int size_set)` (file [cudaMain.cu](src/cudaMain.cu)) for the GPU Code
+
+``` cpp
+for (int i = 0; i < column; ++i) {
+    board[(3 * column) + i] = 1;
+}
+```
+
+Making a Line 3 from the top of all faces of the cube
+
+> TODO: add example
+
 ## Report
 
 ### How to run/use

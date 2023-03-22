@@ -8,6 +8,9 @@
 #include <device_types.h>
 #include <cuda_runtime_api.h>
 
+/**
+ * Game of Life Cube
+ */
 class GameOfLifeCube {
 private:
     // Flag if update does anything
@@ -21,7 +24,7 @@ private:
     double timeStart;
 
     // Size of the world
-    int worldSize;
+    int worldSize = 12;// 1350
 
     // Flag if we have cuda
     bool havaCuda;
@@ -64,6 +67,7 @@ private:
     double cudaAvgTime;
     // Number of times gpu update is called
     long qtyCuda;
+    int * cudaBoard;
 
     /**
      * Update cpu board
@@ -114,6 +118,8 @@ public:
     void cleanUp();
 };
 
+// TODO: remove
 extern int DEBUG_GLOBAL_ROWS;
+// TODO: remove
 extern int DEBUG_GLOBAL_COLS;
 #endif //EWU_CSCD445_PROJECT_GAMEOFLIFECUBE_H

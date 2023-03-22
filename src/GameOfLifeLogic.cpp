@@ -51,7 +51,7 @@ int  getylinead(int * board, int col,int y,int x)
              board[(y * col) + x]+
              board[(y * col-1) + x];
 }
-void printboard(int * board, int row, int col){
+void printboard(int * board, int row, int col) {
 
     std::string printSting{};
     for (int i = 0; i < row; ++i){
@@ -59,9 +59,9 @@ void printboard(int * board, int row, int col){
             if (j == rightstart || j == leftstart || j == backstart || j == topstart || j == botstart) {
                 printSting.append(" ");
             }
-            printSting.append(spdlog::fmt_lib::format("{}", board[(i * col)+j]));
+            printSting.append(spdlog::fmt_lib::format("{},", board[(i * col)+j]));
         }
-        SPDLOG_INFO(printSting);
+        SPDLOG_INFO(printSting); // \n (newline)
         printSting = std::string {};
     }
 }

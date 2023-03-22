@@ -173,7 +173,6 @@ void GameOfLifeCube::cpuCreate(int size) {
 
 void GameOfLifeCube::create() {
     SPDLOG_INFO("Making Game Of Life Cube");
-    this->worldSize = 125;// 1350
     this->worldSize -= this->worldSize % 6;
     this->cubeCreate();
     this->cpuCreate(this->worldSize);
@@ -202,10 +201,10 @@ void GameOfLifeCube::create() {
 void GameOfLifeCube::draw() {
     if (useHelpImg) {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, helpTexID);
+        glBindTexture(GL_TEXTURE_2D, this->helpTexID);
     } else if (usingCuda) {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, cudaTexID);
+        glBindTexture(GL_TEXTURE_2D, this->cudaTexID);
     } else {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this->cpuTexID);
@@ -231,8 +230,8 @@ void GameOfLifeCube::update(GLfloat deltaTime, double time) {
 //                cudaEventRecord(launch_begin, 0);
                 double now, then;
                 now = currentTime();
-                int * cudaBoard = cudaMainUpdate();
-                genImg(cudaBoard, this->imgBoard);
+                this->cudaBoard = cudaMainUpdate();
+                genImg(this->cudaBoard, this->imgBoard);
                 genTexImg(&this->cudaTexID, true, this->imgBoard);
                 then = currentTime();
                 this->cudaTime = static_cast<float>(then - now);
@@ -258,14 +257,20 @@ void GameOfLifeCube::update(GLfloat deltaTime, double time) {
 
 void GameOfLifeCube::ImGUIHeader() {
     if (ImGui::CollapsingHeader("Game Of Life")) {
-        // TODO: make sub header for reset world
-        int max_texture_size;
-        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-        if (ImGui::SliderInt("Size Of World (Not Setup Yet)", &this->worldSize, 6, (max_texture_size / 6))) {
-            this->worldSize -= this->worldSize % 6;
-            // TODO: update world size in GPU and CPU
+        ImGui::Spacing();
+        if (ImGui::CollapsingHeader("Reset Menu(Not Setup Yet)")) {
+            // TODO: reset
+            int max_texture_size;
+            glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+            if (ImGui::SliderInt("New Size Of World", &this->worldSize, 6, (max_texture_size / 6))) {
+                this->worldSize -= this->worldSize % 6;
+            }
+            if (ImGui::Button("Reset game of life world")) {
+                this->cleanUp();
+                this->create();
+            }
+            ImGui::Spacing();
         }
-        // END OF THE RESET CODE
         ImGui::SliderFloat("Speed of Game of Life (sec)", &this->speed, 0.001f, 15.0f);
         ImGui::Checkbox("Run game of life", &this->run);
         ImGui::Checkbox("Use help image (f, l, r, b, t, b)", &this->useHelpImg);
@@ -278,10 +283,14 @@ void GameOfLifeCube::ImGUIHeader() {
             ImGui::Text("Cuda not available");
         }
         if (ImGui::Button("Console Print CPU State")) {
-            SPDLOG_INFO(spdlog::fmt_lib::format("State {}", this->qtyCpu));
+            SPDLOG_INFO(spdlog::fmt_lib::format("CPU State {}", this->qtyCpu));
             printboard(this->board, this->row, this->column);
         }
-        ImGui::Text("CPU World Size: row: %d, col(Note: row * 6): %d", this->row, this->column);
+        if (ImGui::Button("Console Print GPU State")) {
+            SPDLOG_INFO(spdlog::fmt_lib::format("GPU State {}", this->qtyCuda));
+            printboard(this->cudaBoard, this->row, this->column);
+        }
+        ImGui::Text("World Size: row: %d, col(Note: row * 6): %d", this->row, this->column);
         // TODO: sub header
         ImGui::Text("CPU        Time %f (ms)", this->cpuTime * 1000);
         ImGui::Text("GPU (CUDA) Time %f (ms)", this->cudaTime * 1000);
@@ -298,12 +307,16 @@ void GameOfLifeCube::ImGUIHeader() {
 void GameOfLifeCube::cleanUp() {
     if (this->havaCuda) {
         cudaMainCleanUp();
-        cudaEventDestroy(this->launch_begin);
-        cudaEventDestroy(this->launch_end);
+        cudaEventDestroy(this->launch_begin); // GameOfLifeCube::create()
+        cudaEventDestroy(this->launch_end); // GameOfLifeCube::create()
+        glDeleteTextures(1, &this->cudaTexID); // GameOfLifeCube::create()
     }
-    free(this->board);
-    free(this->pboard);
-    free(this->imgBoard);
+    free(this->board); // GameOfLifeCube::cpuCreate
+    free(this->pboard); // GameOfLifeCube::cpuCreate
+    free(this->imgBoard); // GameOfLifeCube::cpuCreate
+    glDeleteTextures(1, &this->cpuTexID); // GameOfLifeCube::cpuCreate
+    glDeleteTextures(1, &this->helpTexID); // GameOfLifeCube::create
+    glDeleteVertexArrays(1, &this->cube_vao); // GameOfLifeCube::cubeCreate
 }
 
 void GameOfLifeCube::cpuUpdate(double time) {
