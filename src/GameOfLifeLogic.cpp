@@ -35,6 +35,26 @@
 //int leftend = 4*(column/6)-1;
 #define leftend (4*(col/6)-1)
 
+int cpuDeadorAlive(int value, int currentLocation){
+    if (currentLocation == 1)
+        if (value - 1 == 2 || value - 1 == 3)
+            return 1;
+        else
+            return 0;
+    else if (value == 3)
+        return 1;
+    else
+        return 0;
+}
+
+int  cpu_get_x_lined(int * board, int col,int y,int x)
+{
+    return   board[(y * col) + x-1]+
+             board[(y * col) + x]+
+             board[(y * col) + x+1];
+}
+
+
 int  getxlinead(int * board, int col, int y, int x) {
     if(x >= DEBUG_GLOBAL_COLS || y >= DEBUG_GLOBAL_ROWS) {
         SPDLOG_ERROR(spdlog::fmt_lib::format("OUT OF BOUNDS: x = {}, y = {}", x, y));
@@ -639,7 +659,7 @@ void runlife(int * board, int * nextboard, int inbound_row, int inbound_col)
         for (int j = start; j < wrapBoxColumn ; ++j) {
             if(i==0){
                 mergetop(board,nextboard, row, column);
-               // x = addUpLife(board, i, j,column);
+                // x = addUpLife(board, i, j,column);
             }
             else if(i==row-1)
             {

@@ -105,11 +105,15 @@ Gives control over the camera.
 -   Slider `Eye Radias` the diastase the camera is from `Eye Center`
 -   Drag `Eye Center` where the camera looking at
 
+> Note: a cube (not game of life cube) exist at light `Eye Center`
+
 ##### Light Settings
 
 ![Light GUI Menu](doc/lightgui.png)
 
 No need to use from the project (Leave at defaults)
+
+> Note: a cube (not game of life cube) exist at light `position`
 
 ##### Window Settings
 
@@ -197,15 +201,15 @@ BLANK
 | Cuda/GPU                                                  | CPU                                                       |
 |-----------------------------------------------------------|-----------------------------------------------------------|
 | Cube                                                      | Cube                                                      |
-| MISSING IMG                                               | MISSING IMG                                               |
+| TODO MISSING IMG                                          | TODO MISSING IMG                                          |
 | Data of all faces (front, right, back, left, top, bottom) | Data of all faces (front, right, back, left, top, bottom) |
-| MISSING IMG                                               | MISSING IMG                                               |
+| TODO MISSING IMG                                          | TODO MISSING IMG                                          |
 
 ### SpeedUp
 
 BLANK
 
-MISSING IMG
+TODO MISSING IMG
 
 ### Video
 
