@@ -15,349 +15,6 @@ int rows;
 int cols;
 int size;
 
-__host__ int  cpu_get_x_lined(int * board, int col,int y,int x)
-{
-    return   board[(y * col) + x-1]+
-             board[(y * col) + x]+
-             board[(y * col) + x+1];
-}
-
-__host__ int cpuDeadorAlive(int value, int currentLocation){
-    if (currentLocation == 1)
-        if (value - 1 == 2 || value - 1 == 3)
-            return 1;
-        else
-            return 0;
-    else if (value == 3)
-        return 1;
-    else
-        return 0;
-}
-
-// the y and x values should be the max-1 and are static for this
-// function
-
-//TODO need to check if the y needs to be "-1"
-__host__ void cornerHost(int* h_board, int * h_next_board,int y, int x)
-{
-    int *board =h_board;
-    int *nextboard = h_next_board;
-    int value=0;
-    y--;
-    // the first four or the corners of the main box (warps)
-    //left corner of front to top and left (warps)
-    value = board[((x/3)*2)]+
-            board[((x/3)*2)+1]+
-            board[4*(x/6)-1]+
-            board[0]+
-            board[1]+
-            board[(1)*x+(4*(x/6)-1)]+
-            board[(1)*x+0]+
-            board[(1)*x+0+1];
-
-    nextboard[0]= cpuDeadorAlive(value,board[0]);
-
-    // Right top corner of Left to top and front (warps)
-    value = board[x*(y-1)+((x/3)*2)]+
-            board[x*(y)+((x/3)*2)]+
-
-            board[0*x+(4*(x/6)-1)-1]+
-            board[0*x+(4*(x/6)-1)]+
-            board[0*x+0]+
-
-            board[(0+1)*x+(4*(x/6)-1)-1]+
-            board[(0+1)*x+(4*(x/6)-1)]+
-            board[(0+1)*x+0+1];
-
-    nextboard[0*x+(4*(x/6)-1)]= cpuDeadorAlive(value,board[0*x+(4*(x/6)-1)]);
-
-    // left bot corner of front with left and bot (warps)
-
-    value = board[(y-1)*x+(4*(x/6)-1)]+
-            board[(y-1)*x+((x/3)*2)]+
-            board[(y-1)*x+((x/3)*2)+1]+
-
-            board[y*x+(4*(x/6)-1)]+
-            board[y*x+0]+
-            board[y*x+0+1]+
-
-            board[0*x+((x/6)*5)]+
-            board[0*x+((x/6)*5)+1];
-
-            nextboard[y*x+0]= cpuDeadorAlive(value,
-                                             board[y*x+0]);
-    // right bot corner of left with top and bot (warps)
-    value = board[(y-1)*x+(4*(x/6)-1)-1]+
-            board[(y-1)*x+(4*(x/6)-1)]+
-            board[(y-1)*x+0]+
-
-            board[(y)*x+(4*(x/6)-1)-1]+
-            board[(y)*x+(4*(x/6)-1)]+
-            board[(y)*x+0]+
-
-            board[0*x+((x/6)*5)]+
-            board[(0+1)*x+((x/6)*5)];
-
-    nextboard[(y)*x+(4*(x/6)-1)]= cpuDeadorAlive(value,
-                                     board[(y)*x+(4*(x/6)-1)]);
-
-    // left top corners with no wraps
-    // so the next set are all left top corners
-    // right with front and top
-    value =     board[0*x+((x/6)*5-1)]+
-            board[(0+1)*x+((x/6)*5-1)]+
-            cpu_get_x_lined(board,x,0,(x/6))+
-            cpu_get_x_lined(board,x,1,(x/6));
-
-    nextboard[0*x+(x/6)]= cpuDeadorAlive(value,
-                                         board[0*x+(x/6)]);
-
-    // back with right and top
-    value =     board[y*x+((x/3)*2)]+
-                board[y*x+((x/3)*2)+1]+
-
-    cpu_get_x_lined(board,x,0,(2*(x/6)))+
-    cpu_get_x_lined(board,x,1,(2*(x/6)));
-
-    nextboard[0*x+(2*(x/6))]= cpuDeadorAlive(value,
-                                         board[0*x+(2*(x/6))]);
-
-    // left with back and top
-    value = board[0*x+((x/3)*2)]+
-            board[(0+1)*x+((x/3)*2)]+
-
-    cpu_get_x_lined(board,x,0,(3*(x/6)))+
-    cpu_get_x_lined(board,x,1,(3*(x/6)));
-
-    nextboard[0*x+(3*(x/6))]= cpuDeadorAlive(value,
-                                             board[0*x+(3*(x/6))]);
-
-    // the next set is the right top corners
-    // front with right and top
-    value =     board[0*x+((x/6)*5-1)]+
-            board[0*x+((x/6)*5-1)-1]+
-
-    cpu_get_x_lined(board,x,0,(x/6-1))+
-    cpu_get_x_lined(board,x,1,(x/6-1));
-
-    nextboard[0*x+(x/6-1)]= cpuDeadorAlive(value,
-                                             board[0*x+(x/6-1)]);
-
-    // right with top and back
-    value =     board[y*x+((x/6)*5-1)]+
-            board[(y-1)*x+((x/6)*5-1)]+
-
-    cpu_get_x_lined(board,x,0,(2*(x/6)-1))+
-    cpu_get_x_lined(board, x,0+1,(2*(x/6)-1));
-
-    nextboard[0*x+(2*(x/6)-1)]= cpuDeadorAlive(value,
-                                           board[0*x+(2*(x/6)-1)]);
-
-
-    // right corner back
-    value =     board[y*x+((x/6)*5-1)]+
-            board[y*x+((x/6)*5-1)-1]+
-
-    cpu_get_x_lined(board,x,0,(3*(x/6)-1))+
-    cpu_get_x_lined(board,x,0+1,(3*(x/6)-1));
-
-    nextboard[0*x+(2*(x/6)-1)]= cpuDeadorAlive(value,
-                                               board[0*x+(3*(x/6)-1)]);
-
-    // the next set handles the left bots corners
-    // right with front and bot
-    value = board[0*x+(x - 1)]+
-            board[0*x+(x - 1)-1]+
-
-    cpu_get_x_lined(board,x,y,(x/6))+
-    cpu_get_x_lined(board,x,y-1,(x/6));
-
-    nextboard[y*x+(x/6-1)]= cpuDeadorAlive(value,
-                                               board[y*x+(x/6-1)]);
-
-    // back with right and bot
-    value = board[(y*x) + (x - 1)]+
-            board[((y-1)*x) + (x - 1)]+
-
-    cpu_get_x_lined(board,x,y,(2*(x/6)))+
-    cpu_get_x_lined(board,x,y-1,(2*(x/6)));
-
-    nextboard[y*x+(2*(x/6)-1)]= cpuDeadorAlive(value,
-                                           board[y*x+(2*(x/6)-1)]);
-    // left with back and bot
-    value =     board[y*x+((x/6)*5)]+
-            board[(y-1)*x+((x/6)*5)+1]+
-
-    cpu_get_x_lined(board,x,y,(3*(x/6)))+
-    cpu_get_x_lined(board,x,y-1,(3*(x/6)));
-
-    nextboard[y*x+(3*(x/6))]= cpuDeadorAlive(value,
-                                               board[y*x+(3*(x/6))]);
-
-    // bot right corners of main
-    // front with right and bot
-
-    value = board[0*x+(5*(x/6))]+
-    board[(0+1)*x+(5*(x/6))]+
-
-    cpu_get_x_lined(board,x,y,(x/6))+
-    cpu_get_x_lined(board,x,y-1,(x/6));
-
-    nextboard[y*x+(x/6)]= cpuDeadorAlive(value,
-                                             board[y*x+(x/6)]);
-
-    // right with back and bot
-    value =     board[y*x+(x - 1)]+
-            board[(y)*x+(x - 1)-1]+
-
-    cpu_get_x_lined(board,x,y,2*(x/6)-1)+
-    cpu_get_x_lined(board,x,y-1,2*(x/6)-1);
-
-    nextboard[y*x+2*(x/6)-1]= cpuDeadorAlive(value,
-                                         board[y*x+2*(x/6)-1]);
-
-    // back with left and bot
-    value =     board[y*x+5*(x/6)]+
-            board[y*x+5*(x/6)+1]+
-
-    cpu_get_x_lined(board,x,y,(3*(x/6)-1))+
-    cpu_get_x_lined(board,x,y-1,(3*(x/6)-1));
-
-    nextboard[y*x+(3*(x/6)-1)]= cpuDeadorAlive(value,
-                                             board[y*x+(3*(x/6)-1)]);
-
-// For the top
-// top with left and front
-
-    value   =   board[0*x+0]+
-                board[0*x+0+1]+
-
-                board[0*x+(3*(x/6))]+
-                board[0*x+((x/3)*2)]+
-                board[0*x+((x/3)*2)+1]+
-
-                board[(1)*x+(3*(x/6))]+
-                board[(1)*x+((x/3)*2)]+
-                board[(1)*x+((x/3)*2)+1];
-
-    nextboard[0*x+((x/3)*2)]= cpuDeadorAlive(value,
-                                               board[0*x+((x/3)*2)]);
-
-    //top with right and front
-    value =     board[0*x+(x/6-1)-1]+
-            board[0*x+(x/6-1)]+
-
-            board[0*x+((x/6)*5-1)-1]+
-            board[0*x+((x/6)*5-1)]+
-            board[0*x+(x/6)]+
-
-            board[(1)*x+((x/6)*5-1)-1]+
-            board[(1)*x+((x/6)*5-1)]+
-            board[(0)*x+(x/6)+1];
-
-    nextboard[0*x+((x/6)*5-1)]= cpuDeadorAlive(value,
-                                             board[0*x+((x/6)*5-1)]);
-
-    //Top with back and right
-    value = board[0*x+(2*(x/6))]+
-            board[0*x+(2*(x/6))+1];
-
-            board[0*x+(2*(x/6)-1)]+
-            board[y*x+((x/6)*5-1)]+
-            board[y*x+((x/6)*5-1)+1]+
-
-            board[1*x+(2*(x/6)-1)]+
-            board[(y-1)*x+((x/6)*5-1)]+
-            board[(y-1)*x+((x/6)*5-1)-1];
-
-            nextboard[y*x+((x/6)*5-1)] = cpuDeadorAlive(value,
-                                                       board[y*x+((x/6)*5-1)]);
-
-
-    // Top with back left
-    value =  board[0*x+(3*(x/6)-1)]+
-             board[0*x+(3*(x/6)-1)-1]+
-
-            board[0*x+(3*(x/6))]+
-            board[(y)*x+((x/3)*2)]+
-            board[(y)*x+((x/3)*2)+1]+
-
-            board[0*x+(3*(x/6))+1]+
-            board[(y-1)*x+((x/3)*2)]+
-            board[(y-1)*x+((x/3)*2)+1];
-
-    nextboard[(y)*x+((x/3)*2)] = cpuDeadorAlive(value,
-                                                board[(y)*x+((x/3)*2)]);
-
-
-    //botmerge corner
-    // bot with front and left
-        value = board[y*x]+
-                board[y*x+1]+
-
-                board[y*x+(4*(x/6)-1)]+
-                board[0*x+((x/6)*5)]+
-                board[0*x+((x/6)*5)+1]+
-
-                //was wrapBoxRow+1
-                board[(y) * x + (4*(x/6))]+
-                board[(1)*x+((x/6)*5)]+
-                board[(1)*x+((x/6)*5)+1];
-
-     nextboard[0*x+((x/6)*5)] = cpuDeadorAlive(value,
-                                                board[0*x+((x/6)*5)]);
-
-    //bot with front and right
-    x =     board[y*x+ (x/6-1)-1]+
-            board[y*x+ (x/6-1)]+
-
-            board[0*x+(x - 1)-1]+
-            board[0*x+(x - 1)]+
-            board[y*x+(x/6)]+
-
-            board[(1)*x+(x - 1)-1]+
-            board[(1)*x+(x - 1)]+
-            board[(y-1)*x+ (x/6)];
-    nextboard[0*x+(x - 1)] = cpuDeadorAlive(value,
-                                              board[0*x+(x - 1)]);
-
-
-
-    //bot with right and back
-    x =     board[y*x+(2*(x/6))]+
-            board[y*x+(2*(x/6))+1]+
-
-            board[y*x+(2*(x/6)-1)]+
-            board[(y)*x+(x - 1)]+
-            board[(y)*x+(x - 1)-1]+
-
-            board[y*x+(2*(x/6)-1)-1]+
-            board[(y-1)*x+(x - 1)]+
-            board[(y-1)*x+(x - 1)-1];
-
-        nextboard[(y)*x+(x - 1)] = cpuDeadorAlive(value,
-                                              board[(y)*x+(x - 1)]);
-
-
-
-    //bot with back and left
-
-    x =     board[y*x+(2*(x/6))]+
-            board[y*x+(2*(x/6))]+
-
-            board[y*x+(3*(x/6))]+
-            board[y*x+((x/6)*5)]+
-            board[y*x+((x/6)*5)-1]+
-
-            board[y*x+(3*(x/6))+1]+
-            board[(y-1)*x+((x/6)*5)-1]+
-            board[(y-1)*x+((x/6)*5)-1];
-    nextboard[y*x+((x/6)*5)] = cpuDeadorAlive(value,
-                                              board[y*x+((x/6)*5)]);
-
-
-}
-
 __device__ int get_x_lined(int * board, int col,int x,int y)
 {
     return  (board[(y * col) + x-1])+
@@ -437,6 +94,7 @@ __global__ void conway_edges(int *self, int *self_next, int *other, int self_idx
 
     //Write the result
     *self_next = (sum == 3) || (sum-(*self) == 3);
+
 }
 
 void cuda_launch_conway_edges(int blocksize) {
@@ -464,14 +122,14 @@ void cuda_launch_conway_edges(int blocksize) {
     conway_edges <<<numBlocks, blocksize>>>(d_board+cols*(rows-1)+1, d_nextboard+cols*(rows-1)+1, d_board + size*5 + 1, 1, 1, (-cols), edge_length); // bottom to front
     conway_edges <<<numBlocks, blocksize>>>(d_board + size*5 + 1, d_nextboard + size*5 + 1, d_board+cols*(rows-1)+1, 1, 1, (-cols), edge_length); // front to bottom
 
-    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2, d_nextboard + 1 + size*2, d_board + size*6 - 2 + cols*rows-1, 1, -1, (-cols), edge_length); // bottom to back
-    conway_edges <<<numBlocks, blocksize>>>(d_board + size*6 - 2 + cols*rows-1, d_nextboard + size*6 - 2 + cols*rows-1, d_board + 1 + size*2, -1, 1, (-cols), edge_length); // back to bottom
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2 + cols*(rows-1), d_nextboard + 1 + size*2 + cols*(rows-1), d_board + size*6 - 2 + cols*(rows-1), 1, -1, (-cols), edge_length); // bottom to back
+    conway_edges <<<numBlocks, blocksize>>>(d_board + size*6 - 2 + cols*(rows-1), d_nextboard + size*6 - 2 + cols*(rows-1), d_board + 1 + size*2 + cols*(rows-1), -1, 1, (-cols), edge_length); // back to bottom
 
-    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size, d_nextboard + 1 + size , d_board + size*6 - 1 + cols, 1, cols, (-cols), edge_length); //bottom to right
-    conway_edges <<<numBlocks, blocksize>>>(d_board + size*6 - 1 + cols, d_nextboard + size*6 - 1 + cols, d_board + 1 + size, cols, 1, -1, edge_length); //right to bottom
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size + cols*(rows-1), d_nextboard + 1 + size + cols*(rows-1), d_board + size*6 - 1 + cols, 1, cols, (-cols), edge_length); //bottom to right
+    conway_edges <<<numBlocks, blocksize>>>(d_board + size*6 - 1 + cols, d_nextboard + size*6 - 1 + cols, d_board + 1 + size + cols*(rows-1), cols, 1, -1, edge_length); //right to bottom
 
-    conway_edges <<<numBlocks, blocksize>>>(d_board + size*3 + 1, d_nextboard + size*3 + 1, d_board + size*5 + cols*(rows-2), 1, (-cols), (-cols), edge_length); // bottom to left
-    conway_edges <<<numBlocks, blocksize>>>(d_board + size*5 + cols*(rows-2), d_nextboard + size*5 + cols*(rows-2), d_board + size*3 + 1, (-cols), 1, 1, edge_length); // bottom to left
+    conway_edges <<<numBlocks, blocksize>>>(d_board + size*3 + 1 + cols*(rows-1), d_nextboard + size*3 + 1 + cols*(rows-1), d_board + size*5 + cols*(rows-2), 1, (-cols), (-cols), edge_length); // bottom to left
+    conway_edges <<<numBlocks, blocksize>>>(d_board + size*5 + cols*(rows-2), d_nextboard + size*5 + cols*(rows-2), d_board + size*3 + 1 + cols*(rows-1), (-cols), 1, 1, edge_length); // bottom to left
 }
 
 // Called when setting things up before graphs loop
@@ -486,21 +144,21 @@ __host__ void cudaMainInitialize(int size_set) {
     h_next_board = (int *) calloc(rows*cols, sizeof(int));
 
     //Initialize a pattern in the conway grid
-    for (int i = 0; i < cols; ++i) {
-        h_board[(3 * cols) + i] = 1;
-    }
+//    for (int i = 0; i < cols; ++i) {
+//        h_board[(3 * cols) + i] = 1;
+//    }
+// Glider
+    h_board[3*cols + 110] = 1;
+    h_board[3*cols + 111] = 1;
+    h_board[3*cols + 112] = 1;
+    h_board[4*cols + 110] = 1;
+    h_board[5*cols + 111] = 1;
 
-//    h_board[3*cols + 10] = 1;
-//    h_board[3*cols + 11] = 1;
-//    h_board[3*cols + 12] = 1;
-//    h_board[4*cols + 10] = 1;
-//    h_board[5*cols + 11] = 1;
-//
-//    h_board[3*cols + 10 + size] = 1;
-//    h_board[3*cols + 11 + size] = 1;
-//    h_board[3*cols + 12 + size] = 1;
-//    h_board[4*cols + 10 + size] = 1;
-//    h_board[5*cols + 11 + size] = 1;
+    h_board[3*cols + 110 + size] = 1;
+    h_board[3*cols + 111 + size] = 1;
+    h_board[3*cols + 112 + size] = 1;
+    h_board[4*cols + 110 + size] = 1;
+    h_board[5*cols + 111 + size] = 1;
 
     //cuda memory allocation
     cudaMalloc(&d_board, sizeof(int)*rows*cols);
@@ -525,11 +183,9 @@ int *cudaMainUpdate() {
 
     memcpy(h_next_board, h_board, rows*cols*sizeof(*h_board));
 
-    // #### Corners ####
-    cornerHost(h_board, h_next_board, rows,cols);
-
     cudaMemcpy(d_nextboard, h_next_board, rows*cols*sizeof(*d_nextboard), cudaMemcpyHostToDevice);
     cudaMemcpy(d_board, h_board, rows*cols*sizeof(*d_nextboard), cudaMemcpyHostToDevice);
+
     // #### Field ####
     launch_two_d_conway_block(blockdim);
 

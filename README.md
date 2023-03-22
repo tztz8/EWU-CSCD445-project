@@ -83,6 +83,8 @@ A [imgui state](imgui.ini) file will also be made to remember somethings about G
 
 Recommend using a game pad (Microsoft Xbox Series S\|X Controller) to look that the game of life cube
 
+> Note: avoid using left stick
+
 ![Ruing after a bit](doc/Screenshot_from_2023-03-21_13-26-27.png)
 
 ![The console of the Ruing after a bit imgage](doc/console_of_it.png)
@@ -167,6 +169,8 @@ Gives control over the graphics settings
 ![Game Pad GUI Menu](doc/Screenshot%20from%202023-03-21%2013-47-56.png)
 
 Give info about use the game pad and how to use it
+
+> Note: avoid using left thumb stick
 
 > Note: only test with Xbox Series Controller over usb c cable on Linux
 

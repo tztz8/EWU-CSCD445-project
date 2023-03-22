@@ -311,7 +311,9 @@ void GameOfLifeCube::ImGUIHeader() {
         ImGui::Text("World Size: row: %d, col(Note: row * 6): %d", this->row, this->column);
         // TODO: sub header
         if (ImGui::CollapsingHeader("CPU Board")) {
-            ImGui::Text(stringBoard(this->board, this->row, this->column).c_str());
+            std::string textouput = stringBoard(this->board, this->row, this->column);
+            ImGui::Text(textouput.c_str());
+//            ImGui::InputTextMultiline("cpu", const_cast<char *>(textouput.c_str()), textouput.size());
         }
         if (this->qtyCuda > 0) {
             if (ImGui::CollapsingHeader("CUDA/GPU Board")) {
