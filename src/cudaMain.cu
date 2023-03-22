@@ -443,9 +443,11 @@ void cuda_launch_conway_edges(int blocksize) {
     const int edge_length = size - 2;
     const dim3 numBlocks(edge_length/blocksize + (1&&(edge_length%blocksize)), 1, 1);
 
+    //wrap
     conway_edges<<<numBlocks, blocksize>>>(d_board + cols, d_nextboard + cols, d_board + size*4 - 1 + cols, cols, cols, 1, edge_length); // front to left
     conway_edges<<<numBlocks, blocksize>>>(d_board + size*4 - 1 + cols, d_nextboard + size*4 - 1 + cols, d_board + cols, cols, cols, -1, edge_length); //left to front
 
+    //start of top
     conway_edges <<<numBlocks, blocksize>>>(d_board + 1, d_nextboard + 1, d_board + (4 * size)+1, 1, 1, cols, edge_length); //top to front
     conway_edges <<<numBlocks, blocksize>>>(d_board + (4 * size)+1, d_nextboard + (4 * size)+1, d_board + 1, 1, 1, cols, edge_length); //front to top
 
@@ -458,11 +460,18 @@ void cuda_launch_conway_edges(int blocksize) {
     conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*3, d_nextboard + 1 + size*3, d_board + 4*size + cols*(rows-2), 1, (-cols), cols, edge_length); //top to left
     conway_edges <<<numBlocks, blocksize>>>(d_board + 4*size + cols*(rows-2), d_nextboard + 4*size + cols*(rows-2), d_board + 1 + size*3, (-cols), 1, 1, edge_length); //left to top
 
+    //start of bottom
     conway_edges <<<numBlocks, blocksize>>>(d_board+cols*(rows-1)+1, d_nextboard+cols*(rows-1)+1, d_board + size*5 + 1, 1, 1, (-cols), edge_length); // bottom to front
     conway_edges <<<numBlocks, blocksize>>>(d_board + size*5 + 1, d_nextboard + size*5 + 1, d_board+cols*(rows-1)+1, 1, 1, (-cols), edge_length); // front to bottom
 
     conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size*2, d_nextboard + 1 + size*2, d_board + size*6 - 2 + cols*rows-1, 1, -1, (-cols), edge_length); // bottom to back
     conway_edges <<<numBlocks, blocksize>>>(d_board + size*6 - 2 + cols*rows-1, d_nextboard + size*6 - 2 + cols*rows-1, d_board + 1 + size*2, -1, 1, (-cols), edge_length); // back to bottom
+
+    conway_edges <<<numBlocks, blocksize>>>(d_board + 1 + size, d_nextboard + 1 + size , d_board + size*6 - 1 + cols, 1, cols, (-cols), edge_length); //bottom to right
+    conway_edges <<<numBlocks, blocksize>>>(d_board + size*6 - 1 + cols, d_nextboard + size*6 - 1 + cols, d_board + 1 + size, cols, 1, -1, edge_length); //right to bottom
+
+    conway_edges <<<numBlocks, blocksize>>>(d_board + size*3 + 1, d_nextboard + size*3 + 1, d_board + size*5 + cols*(rows-2), 1, (-cols), (-cols), edge_length); // bottom to left
+    conway_edges <<<numBlocks, blocksize>>>(d_board + size*5 + cols*(rows-2), d_nextboard + size*5 + cols*(rows-2), d_board + size*3 + 1, (-cols), 1, 1, edge_length); // bottom to left
 }
 
 // Called when setting things up before graphs loop
@@ -477,21 +486,21 @@ __host__ void cudaMainInitialize(int size_set) {
     h_next_board = (int *) calloc(rows*cols, sizeof(int));
 
     //Initialize a pattern in the conway grid
-    /*for (int i = 0; i < cols; ++i) {
+    for (int i = 0; i < cols; ++i) {
         h_board[(3 * cols) + i] = 1;
-    }*/
+    }
 
-    h_board[3*cols + 10] = 1;
-    h_board[3*cols + 11] = 1;
-    h_board[3*cols + 12] = 1;
-    h_board[4*cols + 10] = 1;
-    h_board[5*cols + 11] = 1;
-
-    h_board[3*cols + 10 + size] = 1;
-    h_board[3*cols + 11 + size] = 1;
-    h_board[3*cols + 12 + size] = 1;
-    h_board[4*cols + 10 + size] = 1;
-    h_board[5*cols + 11 + size] = 1;
+//    h_board[3*cols + 10] = 1;
+//    h_board[3*cols + 11] = 1;
+//    h_board[3*cols + 12] = 1;
+//    h_board[4*cols + 10] = 1;
+//    h_board[5*cols + 11] = 1;
+//
+//    h_board[3*cols + 10 + size] = 1;
+//    h_board[3*cols + 11 + size] = 1;
+//    h_board[3*cols + 12 + size] = 1;
+//    h_board[4*cols + 10 + size] = 1;
+//    h_board[5*cols + 11 + size] = 1;
 
     //cuda memory allocation
     cudaMalloc(&d_board, sizeof(int)*rows*cols);
@@ -517,7 +526,7 @@ int *cudaMainUpdate() {
     memcpy(h_next_board, h_board, rows*cols*sizeof(*h_board));
 
     // #### Corners ####
-    //cornerHost(h_board, h_next_board, rows,cols);
+    cornerHost(h_board, h_next_board, rows,cols);
 
     cudaMemcpy(d_nextboard, h_next_board, rows*cols*sizeof(*d_nextboard), cudaMemcpyHostToDevice);
     cudaMemcpy(d_board, h_board, rows*cols*sizeof(*d_nextboard), cudaMemcpyHostToDevice);

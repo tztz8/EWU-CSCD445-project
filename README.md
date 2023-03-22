@@ -10,6 +10,8 @@ Conway games of life on a cubes surface
     -   [Conway games of life on a cubes surface](#conway-games-of-life-on-a-cubes-surface)
     -   [Functions](#functions)
     -   [Min Goal](#min-goal)
+    -   [World Start (Test data)](#world-start-test-data)
+        -   [Example](#example)
     -   [Report](#report)
         -   [How to run/use](#how-to-runuse)
         -   [Sample run](#sample-run)
@@ -193,17 +195,17 @@ Gives control and info over the Game Of Life
 BLANK
 
 | Cuda/GPU                                                  | CPU                                                       |
-| --------------------------------------------------------- | --------------------------------------------------------- |
+|-----------------------------------------------------------|-----------------------------------------------------------|
 | Cube                                                      | Cube                                                      |
-|                                                           |                                                           |
+| MISSING IMG                                               | MISSING IMG                                               |
 | Data of all faces (front, right, back, left, top, bottom) | Data of all faces (front, right, back, left, top, bottom) |
-|                                                           |                                                           |
-
-
+| MISSING IMG                                               | MISSING IMG                                               |
 
 ### SpeedUp
 
 BLANK
+
+MISSING IMG
 
 ### Video
 
@@ -211,7 +213,7 @@ TODO Video Link
 
 ## Making the program
 
-We only test on linux
+We only test on Linux
 
 ### For the program
 

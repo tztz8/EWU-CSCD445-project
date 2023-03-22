@@ -308,334 +308,321 @@ void mergebot(int * board, int * nextboard,int row, int col)
 
 void mergecorners(int * board,int * nextboard,int row, int col)
 {
-    int x =0;
 
-    // left top corner front with warp
+    int value=0;
+    int x= row;
+    int y= col--;
+    // the first four or the corners of the main box (warps)
+    //left corner of front to top and left (warps)
+    value = board[((x/3)*2)]+
+            board[((x/3)*2)+1]+
+            board[4*(x/6)-1]+
+            board[0]+
+            board[1]+
+            board[(1)*x+(4*(x/6)-1)]+
+            board[(1)*x+0]+
+            board[(1)*x+0+1];
 
-    x =     board[topstart]+
-            board[topstart+1]+
+    nextboard[0]= cpuDeadorAlive(value,board[0]);
 
-            board[leftend]+
-            board[start]+
-            board[start+1]+
+    // Right top corner of Left to top and front (warps)
+    value = board[x*(y-1)+((x/3)*2)]+
+            board[x*(y)+((x/3)*2)]+
 
-            board[(start+1)*col+leftend]+
-            board[(start+1)*col+start]+
-            board[(start+1)*col+start+1];
-    deadorAlive(board,nextboard,col,x,start,start);
+            board[0*x+(4*(x/6)-1)-1]+
+            board[0*x+(4*(x/6)-1)]+
+            board[0*x+0]+
 
-    // right top corner of left with warp
-    x =     board[col*(wrapBoxRow-1)+topstart]+
-            board[col*(wrapBoxRow)+topstart]+
+            board[(0+1)*x+(4*(x/6)-1)-1]+
+            board[(0+1)*x+(4*(x/6)-1)]+
+            board[(0+1)*x+0+1];
 
-            board[start*col+leftend-1]+
-            board[start*col+leftend]+
-            board[start*col+start]+
+    nextboard[0*x+(4*(x/6)-1)]= cpuDeadorAlive(value,board[0*x+(4*(x/6)-1)]);
 
-            board[(start+1)*col+leftend-1]+
-            board[(start+1)*col+leftend]+
-            board[(start+1)*col+start+1];
+    // left bot corner of front with left and bot (warps)
 
-    // left bot corner of front with warp
+    value = board[(y-1)*x+(4*(x/6)-1)]+
+            board[(y-1)*x+((x/3)*2)]+
+            board[(y-1)*x+((x/3)*2)+1]+
 
-    deadorAlive(board,nextboard,col,x,start,leftend);
+            board[y*x+(4*(x/6)-1)]+
+            board[y*x+0]+
+            board[y*x+0+1]+
 
-    x =     board[(wrapBoxRow-1)*col+leftend]+
-            board[(wrapBoxRow-1)*col+topstart]+
-            board[(wrapBoxRow-1)*col+topstart+1]+
+            board[0*x+((x/6)*5)]+
+            board[0*x+((x/6)*5)+1];
 
-            board[wrapBoxRow*col+leftend]+
-            board[wrapBoxRow*col+start]+
-            board[wrapBoxRow*col+start+1]+
+    nextboard[y*x+0]= cpuDeadorAlive(value,
+                                     board[y*x+0]);
+    // right bot corner of left with top and bot (warps)
+    value = board[(y-1)*x+(4*(x/6)-1)-1]+
+            board[(y-1)*x+(4*(x/6)-1)]+
+            board[(y-1)*x+0]+
 
-            board[start*col+botstart]+
-            board[start*col+botstart+1];
+            board[(y)*x+(4*(x/6)-1)-1]+
+            board[(y)*x+(4*(x/6)-1)]+
+            board[(y)*x+0]+
 
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,start);
+            board[0*x+((x/6)*5)]+
+            board[(0+1)*x+((x/6)*5)];
 
-    // right bot corner of left with warp
-    x =     board[(wrapBoxRow-1)*col+leftend-1]+
-            board[(wrapBoxRow-1)*col+leftend]+
-            board[(wrapBoxRow-1)*col+start]+
+    nextboard[(y)*x+(4*(x/6)-1)]= cpuDeadorAlive(value,
+                                                 board[(y)*x+(4*(x/6)-1)]);
 
-            board[(wrapBoxRow)*col+leftend-1]+
-            board[(wrapBoxRow)*col+leftend]+
-            board[(wrapBoxRow)*col+start]+
+    // left top corners with no wraps
+    // so the next set are all left top corners
+    // right with front and top
+    value =     board[0*x+((x/6)*5-1)]+
+                board[(0+1)*x+((x/6)*5-1)]+
+                cpu_get_x_lined(board,x,0,(x/6))+
+                cpu_get_x_lined(board,x,1,(x/6));
 
-            board[start*col+botstart]+
-            board[(start+1)*col+botstart];
+    nextboard[0*x+(x/6)]= cpuDeadorAlive(value,
+                                         board[0*x+(x/6)]);
 
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,leftend);
+    // back with right and top
+    value =     board[y*x+((x/3)*2)]+
+                board[y*x+((x/3)*2)+1]+
 
+                cpu_get_x_lined(board,x,0,(2*(x/6)))+
+                cpu_get_x_lined(board,x,1,(2*(x/6)));
 
-    // left top corners with no warps main
-    // left corner right
-    x =     board[start*col+topend]+
-            board[(start+1)*col+topend]+
+    nextboard[0*x+(2*(x/6))]= cpuDeadorAlive(value,
+                                             board[0*x+(2*(x/6))]);
 
-            board[start*col+rightstart-1]+
-            board[start*col+rightstart]+
-            board[start*col+rightstart+1]+
+    // left with back and top
+    value = board[0*x+((x/3)*2)]+
+            board[(0+1)*x+((x/3)*2)]+
 
-            board[(start+1)*col+rightstart-1]+
-            board[(start+1)*col+rightstart]+
-            board[(start+1)*col+rightstart+1];
+            cpu_get_x_lined(board,x,0,(3*(x/6)))+
+            cpu_get_x_lined(board,x,1,(3*(x/6)));
 
-    deadorAlive(board,nextboard,col,x,start,rightstart);
-    //printboard(nextboard);
-
-    // left corner back
-    x =     board[wrapBoxRow*col+topstart]+
-            board[wrapBoxRow*col+topstart+1]+
-
-            board[start*col+backstart-1]+
-            board[start*col+backstart]+
-            board[start*col+backstart+1]+
-
-            board[(start+1)*col+backstart-1]+
-            board[(start+1)*col+backstart]+
-            board[(start+1)*col+backstart+1];
-
-    deadorAlive(board,nextboard,col,x,start,backstart);
-    //printboard(nextboard);
-
-    // left corner left
-    x =     board[start*col+topstart]+
-            board[(start+1)*col+topstart]+
-
-            board[start*col+leftstart-1]+
-            board[start*col+leftstart]+
-            board[start*col+leftstart+1]+
-
-            board[(start+1)*col+leftstart-1]+
-            board[(start+1)*col+leftstart]+
-            board[(start+1)*col+leftstart+1];
-
-    deadorAlive(board,nextboard,col,x,start,leftstart);
-    //printboard(nextboard);
-
-    // right corner front
-    x =     board[start*col+topend]+
-            board[start*col+topend-1]+
-
-            board[start*col+frontend-1]+
-            board[start*col+frontend]+
-            board[start*col+frontend+1]+
-
-            board[(start+1)*col+frontend-1]+
-            board[(start+1)*col+frontend]+
-            board[(start+1)*col+frontend+1];
-
-    deadorAlive(board,nextboard,col,x,start,frontend);
+    nextboard[0*x+(3*(x/6))]= cpuDeadorAlive(value,
+                                             board[0*x+(3*(x/6))]);
 
     // the next set is the right top corners
     // front with right and top
-    x =     board[start*col+topend]+
-            board[start*col+topend-1]+
+    value =     board[0*x+((x/6)*5-1)]+
+                board[0*x+((x/6)*5-1)-1]+
 
-            getxlinead(board,col,start,frontend)+
-            /*           board[start][frontend-1]+
-                       board[start][frontend]+
-                       board[start][frontend+1]+*/
-            getxlinead(board,col,start+1,frontend);
-    /*  board[start+1][frontend-1]+
-      board[start+1][frontend]+
-      board[start+1][frontend+1];
-*/
-    deadorAlive(board,nextboard,col,x,start,frontend);
+                cpu_get_x_lined(board,x,0,(x/6-1))+
+                cpu_get_x_lined(board,x,1,(x/6-1));
 
-    // right corner right
-    x =     board[wrapBoxRow*col+topend]+
-            board[(wrapBoxRow-1)*col+topend]+
-            getxlinead(board, col,start,rightend)+
-            getxlinead(board, col,start+1,rightend);
+    nextboard[0*x+(x/6-1)]= cpuDeadorAlive(value,
+                                           board[0*x+(x/6-1)]);
 
-    deadorAlive(board,nextboard,col,x,start,rightend);
+    // right with top and back
+    value =     board[y*x+((x/6)*5-1)]+
+                board[(y-1)*x+((x/6)*5-1)]+
+
+                cpu_get_x_lined(board,x,0,(2*(x/6)-1))+
+                cpu_get_x_lined(board, x,0+1,(2*(x/6)-1));
+
+    nextboard[0*x+(2*(x/6)-1)]= cpuDeadorAlive(value,
+                                               board[0*x+(2*(x/6)-1)]);
+
 
     // right corner back
-    x =     board[wrapBoxRow*col+topend]+
-            board[wrapBoxRow*col+topend-1]+
-            getxlinead(board, col,start,backend)+
-            getxlinead(board, col,start+1,backend);
+    value =     board[y*x+((x/6)*5-1)]+
+                board[y*x+((x/6)*5-1)-1]+
 
-    deadorAlive(board,nextboard,col,x,start,backend);
+                cpu_get_x_lined(board,x,0,(3*(x/6)-1))+
+                cpu_get_x_lined(board,x,0+1,(3*(x/6)-1));
+
+    nextboard[0*x+(2*(x/6)-1)]= cpuDeadorAlive(value,
+                                               board[0*x+(3*(x/6)-1)]);
+
+    // the next set handles the left bots corners
+    // right with front and bot
+    value = board[0*x+(x - 1)]+
+            board[0*x+(x - 1)-1]+
+
+            cpu_get_x_lined(board,x,y,(x/6))+
+            cpu_get_x_lined(board,x,y-1,(x/6));
+
+    nextboard[y*x+(x/6-1)]= cpuDeadorAlive(value,
+                                           board[y*x+(x/6-1)]);
+
+    // back with right and bot
+    value = board[(y*x) + (x - 1)]+
+            board[((y-1)*x) + (x - 1)]+
+
+            cpu_get_x_lined(board,x,y,(2*(x/6)))+
+            cpu_get_x_lined(board,x,y-1,(2*(x/6)));
+
+    nextboard[y*x+(2*(x/6)-1)]= cpuDeadorAlive(value,
+                                               board[y*x+(2*(x/6)-1)]);
+    // left with back and bot
+    value =     board[y*x+((x/6)*5)]+
+                board[(y-1)*x+((x/6)*5)+1]+
+
+                cpu_get_x_lined(board,x,y,(3*(x/6)))+
+                cpu_get_x_lined(board,x,y-1,(3*(x/6)));
+
+    nextboard[y*x+(3*(x/6))]= cpuDeadorAlive(value,
+                                             board[y*x+(3*(x/6))]);
+
+    // bot right corners of main
+    // front with right and bot
+
+    value = board[0*x+(5*(x/6))]+
+            board[(0+1)*x+(5*(x/6))]+
+
+            cpu_get_x_lined(board,x,y,(x/6))+
+            cpu_get_x_lined(board,x,y-1,(x/6));
+
+    nextboard[y*x+(x/6)]= cpuDeadorAlive(value,
+                                         board[y*x+(x/6)]);
+
+    // right with back and bot
+    value =     board[y*x+(x - 1)]+
+                board[(y)*x+(x - 1)-1]+
+
+                cpu_get_x_lined(board,x,y,2*(x/6)-1)+
+                cpu_get_x_lined(board,x,y-1,2*(x/6)-1);
+
+    nextboard[y*x+2*(x/6)-1]= cpuDeadorAlive(value,
+                                             board[y*x+2*(x/6)-1]);
+
+    // back with left and bot
+    value =     board[y*x+5*(x/6)]+
+                board[y*x+5*(x/6)+1]+
+
+                cpu_get_x_lined(board,x,y,(3*(x/6)-1))+
+                cpu_get_x_lined(board,x,y-1,(3*(x/6)-1));
+
+    nextboard[y*x+(3*(x/6)-1)]= cpuDeadorAlive(value,
+                                               board[y*x+(3*(x/6)-1)]);
+
+// For the top
+// top with left and front
+
+    value   =   board[0*x+0]+
+                board[0*x+0+1]+
+
+                board[0*x+(3*(x/6))]+
+                board[0*x+((x/3)*2)]+
+                board[0*x+((x/3)*2)+1]+
+
+                board[(1)*x+(3*(x/6))]+
+                board[(1)*x+((x/3)*2)]+
+                board[(1)*x+((x/3)*2)+1];
+
+    nextboard[0*x+((x/3)*2)]= cpuDeadorAlive(value,
+                                             board[0*x+((x/3)*2)]);
+
+    //top with right and front
+    value =     board[0*x+(x/6-1)-1]+
+                board[0*x+(x/6-1)]+
+
+                board[0*x+((x/6)*5-1)-1]+
+                board[0*x+((x/6)*5-1)]+
+                board[0*x+(x/6)]+
+
+                board[(1)*x+((x/6)*5-1)-1]+
+                board[(1)*x+((x/6)*5-1)]+
+                board[(0)*x+(x/6)+1];
+
+    nextboard[0*x+((x/6)*5-1)]= cpuDeadorAlive(value,
+                                               board[0*x+((x/6)*5-1)]);
+
+    //Top with back and right
+    value = board[0*x+(2*(x/6))]+
+            board[0*x+(2*(x/6))+1];
+
+    board[0*x+(2*(x/6)-1)]+
+    board[y*x+((x/6)*5-1)]+
+    board[y*x+((x/6)*5-1)+1]+
+
+    board[1*x+(2*(x/6)-1)]+
+    board[(y-1)*x+((x/6)*5-1)]+
+    board[(y-1)*x+((x/6)*5-1)-1];
+
+    nextboard[y*x+((x/6)*5-1)] = cpuDeadorAlive(value,
+                                                board[y*x+((x/6)*5-1)]);
 
 
-    // left bot corners with no warps main
-    // right corner front
-    x =     board[start*col+botend]+
-            board[start*col+botend-1]+
-            getxlinead(board, col,wrapBoxRow,rightstart)+
-            getxlinead(board, col,wrapBoxRow-1,rightstart);
+    // Top with back left
+    value =  board[0*x+(3*(x/6)-1)]+
+             board[0*x+(3*(x/6)-1)-1]+
 
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,rightstart);
+             board[0*x+(3*(x/6))]+
+             board[(y)*x+((x/3)*2)]+
+             board[(y)*x+((x/3)*2)+1]+
 
-    // right corner right
-    x =     board[(start * col) + botend]+
-            board[((start+1) * col) + botend]+
-            getxlinead(board, col,wrapBoxRow,rightend)+
-            getxlinead(board, col,wrapBoxRow-1,rightend);
+             board[0*x+(3*(x/6))+1]+
+             board[(y-1)*x+((x/3)*2)]+
+             board[(y-1)*x+((x/3)*2)+1];
 
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,rightend);
-
-    // right corner back
-    x =     board[start*col+botstart]+
-            board[start*col+botstart+1]+
-            getxlinead(board, col,wrapBoxRow,backend)+
-            getxlinead(board, col,wrapBoxRow-1,backend);
-
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,backend);
-
-    // bot left corners of main
-    // left corner right
-    x =     board[start*col+botstart]+
-            board[(start+1)*col+botstart]+
-            getxlinead(board, col,wrapBoxRow,rightstart)+
-            getxlinead(board, col,wrapBoxRow-1,rightstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,rightstart);
-
-    //printboard(nextboard);
-
-    // bot left corners of main
-    // left corner back
-    x =     board[start*col+botend]+
-            board[start*col+botend-1]+
-            getxlinead(board, col,wrapBoxRow,backstart)+
-            getxlinead(board, col,wrapBoxRow-1,backstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,backstart);
-
-    //printboard(nextboard);
-    // bot left corners of main
-    // left corner left
-    x =     board[start*col+botstart]+
-            board[(start+1)*col+botstart]+
-            getxlinead(board, col,wrapBoxRow,leftstart)+
-            getxlinead(board, col,wrapBoxRow-1,backstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,leftstart);
-
-    //printboard(nextboard);
-
-    //topmerge corner
-    //top front
-    x =     board[start*col+start]+
-            board[start*col+start+1]+
-
-            board[start*col+leftstart]+
-            board[start*col+topstart]+
-            board[start*col+topstart+1]+
-
-            board[(start+1)*col+leftstart]+
-            board[(start+1)*col+topstart]+
-            board[(start+1)*col+topstart+1];
-
-    deadorAlive(board,nextboard,col,x,start,topstart);
-
-    //top right
-    x =     board[start*col+frontend-1]+
-            board[start*col+frontend]+
-
-            board[start*col+topend-1]+
-            board[start*col+topend]+
-            board[start*col+rightstart]+
-
-            board[(start+1)*col+topend-1]+
-            board[(start+1)*col+topend]+
-            board[(start+1)*col+rightstart];
-
-    deadorAlive(board,nextboard,col,x,start,topend);
-
-    //top left
-    x =     board[start*col+leftstart+1]+
-            board[(wrapBoxRow-1)*col+topstart]+
-            board[(wrapBoxRow-1)*col+topstart+1]+
-
-            board[start*col+leftstart]+
-            board[wrapBoxRow*col+topstart]+
-            board[wrapBoxRow*col+topstart+1]+
-
-            board[start*col+backstart]+
-            board[start*col+backstart+1];
-
-
-    //printf("%d", frontstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,topstart);
-
-    x =     board[start*col+rightend-1]+
-            board[(wrapBoxRow-1)*col+topend]+
-            board[(wrapBoxRow-1)*col+topend-1]+
-
-            board[start*col+rightend]+
-            board[wrapBoxRow*col+topend]+
-            board[wrapBoxRow*col+topend-1]+
-
-            board[start*col+backstart]+
-            board[start*col+backstart+1];
-
-
-    //printf("%d", frontstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,topend);
+    nextboard[(y)*x+((x/3)*2)] = cpuDeadorAlive(value,
+                                                board[(y)*x+((x/3)*2)]);
 
 
     //botmerge corner
-    //bot front
-    x =     board[wrapBoxRow*col+start]+
-            board[wrapBoxRow*col+start+1]+
+    // bot with front and left
+    value = board[y*x]+
+            board[y*x+1]+
 
-            board[start*col+leftstart]+
-            board[start*col+botstart]+
-            board[start*col+botstart+1]+
+            board[y*x+(4*(x/6)-1)]+
+            board[0*x+((x/6)*5)]+
+            board[0*x+((x/6)*5)+1]+
 
             //was wrapBoxRow+1
-            board[((wrapBoxRow) * col) + leftstart]+
-            board[(start+1)*col+botstart]+
-            board[(start+1)*col+botstart+1];
+            board[(y) * x + (4*(x/6))]+
+            board[(1)*x+((x/6)*5)]+
+            board[(1)*x+((x/6)*5)+1];
 
-    deadorAlive(board,nextboard,col,x,start,botstart);
+    nextboard[0*x+((x/6)*5)] = cpuDeadorAlive(value,
+                                              board[0*x+((x/6)*5)]);
 
-    //bot right
-    x =     board[wrapBoxRow*col+frontend-1]+
-            board[wrapBoxRow*col+frontend]+
+    //bot with front and right
+    x =     board[y*x+ (x/6-1)-1]+
+            board[y*x+ (x/6-1)]+
 
-            board[start*col+botend-1]+
-            board[start*col+botend]+
-            board[wrapBoxRow*col+rightstart]+
+            board[0*x+(x - 1)-1]+
+            board[0*x+(x - 1)]+
+            board[y*x+(x/6)]+
 
-            board[(start+1)*col+botend-1]+
-            board[(start+1)*col+botend]+
-            board[(wrapBoxRow-1)*col+rightstart];
-
-    deadorAlive(board,nextboard,col,x,start,botend);
-
-    //top left
-    x =     board[wrapBoxRow*col+leftstart+1]+
-            board[(wrapBoxRow-1)*col+botstart]+
-            board[(wrapBoxRow-1)*col+botstart+1]+
-
-            board[wrapBoxRow*col+leftstart]+
-            board[wrapBoxRow*col+botstart]+
-            board[wrapBoxRow*col+botstart+1]+
-
-            board[wrapBoxRow*col+backstart]+
-            board[wrapBoxRow*col+backstart+1];
+            board[(1)*x+(x - 1)-1]+
+            board[(1)*x+(x - 1)]+
+            board[(y-1)*x+ (x/6)];
+    nextboard[0*x+(x - 1)] = cpuDeadorAlive(value,
+                                            board[0*x+(x - 1)]);
 
 
-    //printf("%d", frontstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,botstart);
 
-    x =     board[wrapBoxRow*col+rightend-1]+
-            board[(wrapBoxRow-1)*col+botend]+
-            board[(wrapBoxRow-1)*col+botend-1]+
+    //bot with right and back
+    x =     board[y*x+(2*(x/6))]+
+            board[y*x+(2*(x/6))+1]+
 
-            board[wrapBoxRow*col+rightend]+
-            board[wrapBoxRow*col+botend]+
-            board[wrapBoxRow*col+botend-1]+
+            board[y*x+(2*(x/6)-1)]+
+            board[(y)*x+(x - 1)]+
+            board[(y)*x+(x - 1)-1]+
 
-            board[wrapBoxRow*col+backstart]+
-            board[wrapBoxRow*col+backstart+1];
+            board[y*x+(2*(x/6)-1)-1]+
+            board[(y-1)*x+(x - 1)]+
+            board[(y-1)*x+(x - 1)-1];
+
+    nextboard[(y)*x+(x - 1)] = cpuDeadorAlive(value,
+                                              board[(y)*x+(x - 1)]);
 
 
-    //printf("%d", frontstart);
-    deadorAlive(board,nextboard,col,x,wrapBoxRow,botend);
+
+    //bot with back and left
+
+    x =     board[y*x+(2*(x/6))]+
+            board[y*x+(2*(x/6))]+
+
+            board[y*x+(3*(x/6))]+
+            board[y*x+((x/6)*5)]+
+            board[y*x+((x/6)*5)-1]+
+
+            board[y*x+(3*(x/6))+1]+
+            board[(y-1)*x+((x/6)*5)-1]+
+            board[(y-1)*x+((x/6)*5)-1];
+    nextboard[y*x+((x/6)*5)] = cpuDeadorAlive(value,
+                                              board[y*x+((x/6)*5)]);
+
 }
 //int board[row][column]
 //nextboard[row][column]
